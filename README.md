@@ -1,6 +1,6 @@
 # cdtn1-NguyenDoTuanKiet-L2
 Sinh viên:
-Nguyễn Đỗ Tuấn Kiêth - 2374802010260 - Track SE
+Nguyễn Đỗ Tuấn Kiệt - 2374802010260 - Track SE
 Học phần:
 Chuyên đề Tốt nghiệp 1, HK1 2026-2027
 Luồng nghiệp vụ:
