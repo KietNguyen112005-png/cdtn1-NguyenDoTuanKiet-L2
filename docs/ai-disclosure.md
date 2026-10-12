@@ -8,6 +8,6 @@ Công cụ AI đã sử dụng: **Claude (Anthropic)**, giao diện chat claude.
 | Claude | Soạn mã PlantUML cho Use Case Diagram; soạn đặc tả use case UC6 (điều kiện trước/sau, luồng chính, luồng ngoại lệ đánh số) | Mục 2 – Use Case | Chèn mã vào draw.io, tự sửa các đường nối bị đứt; đối chiếu tên use case, User Story với bảng truy vết của SRS; 
 | Claude | Đề xuất kiến trúc phân lớp 4 lớp, vẽ sơ đồ kiến trúc và viết 3 câu lập luận theo khuôn "Vì NFR…, tôi chọn…, đánh đổi là…" | Mục 3 – Thiết kế kiến trúc | Đối chiếu từng câu với ngưỡng số trong NFR1, NFR3, NFR4 của SRS và với các nguyên tắc phân lớp ở tài liệu buổi 5; 
 | Claude | Thiết kế ERD 6 bảng, viết SQL DDL, chọn index, đối chiếu tên trường API với ERD | Mục 4 – Mô hình dữ liệu; `docs/schema.sql`; `docs/api-contract.md` | DDL được chạy thử trên một PostgreSQL thật với 15 trường hợp (dữ liệu hợp lệ được ghi, dữ liệu sai bị chặn); đối chiếu checklist ERD của tài liệu buổi 5 (4–6 bảng, khóa chính, khóa ngoại, không bảng cô lập, có bảng lịch sử); 
-| Claude | Thiết kế bố cục 3 màn hình wireframe và bảng đối chiếu trường màn hình với cột dữ liệu | Mục 5 – Wireframe | Đối chiếu từng trường trên màn hình với cột trong ERD (kiểm hai chiều theo tài liệu buổi 5); 
+| Tự làm | Thiết kế bố cục 3 màn hình wireframe và bảng đối chiếu trường màn hình với cột dữ liệu | Mục 5 – Wireframe | Đối chiếu từng trường trên màn hình với cột trong ERD (kiểm hai chiều theo tài liệu buổi 5); 
 
 Họ tên: Nguyễn Đỗ Tuấn Kiệt  ·  MSSV: 2374802010260  ·  Ngày: 08/10/2026
