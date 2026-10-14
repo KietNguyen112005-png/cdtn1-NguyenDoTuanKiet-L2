@@ -1,9 +1,6 @@
 # API contract – Luồng L2: Tiếp nhận và phân loại yêu cầu bảo hành (track SE)
 
 Mẫu đặc tả riêng theo track SE (Hợp đồng API). File này thay thế mục 8 của `docs/srs.md` và đã đối chiếu với `docs/erd.drawio`, `docs/schema.sql`. Thuật ngữ khớp bảng thuật ngữ SRS mục 1.5 (phiếu bảo hành = ticket).
-
-> Ghi chú khi sửa (xóa trước khi nộp): `[BẠN QUYẾT ĐỊNH]` là điểm tôi chọn thay bạn.
-
 ---
 
 ## 1. Danh sách endpoint
@@ -231,4 +228,3 @@ Request: `{ "hours": 72 }` (số giờ làm việc, tính thứ Hai đến thứ
 | 5 | Request E5: `product_id` đổi thành `model_name`; response E4: `model` đổi thành `model_name` | ERD không có bảng sản phẩm |
 | 6 | Đánh số lại endpoint E1–E11 (do bỏ endpoint đính kèm) | Giữ số thứ tự liên tục |
 
-**Cần sửa cho khớp trong `docs/srs.md`:** xóa mục 8 (đã chuyển sang file này); mục 1.3 (PostgreSQL, 6 bảng thay cho MongoDB, 5 collection); phần đính kèm ảnh/video trong FR4 và US4 (chuyển sang mức WON'T, thêm vào mục 1.4); BR8 (bỏ phạm vi theo trung tâm); luồng ngoại lệ 7a và bước 7 của UC6 (bỏ "trạng thái gửi thông báo").
