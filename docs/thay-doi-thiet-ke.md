@@ -34,4 +34,4 @@ Mỗi điểm góp ý gồm đúng bốn dòng: **Góp ý**, **Nguyên nhân**, 
 - **Góp ý:** nhiều commit dạng "Add files via upload", "Update ai-disclosure.md"; nên commit bằng Git với message kiểu `docs(erd): ...`.
 - **Nguyên nhân:** tải file lên bằng giao diện web GitHub nên message do GitHub tự sinh, không mô tả nội dung thay đổi.
 - **Đã sửa:** từ nay làm việc bằng Git trên máy (`git add`, `git commit`, `git push`), mỗi commit một thay đổi, message theo mẫu `loại(phạm-vi): mô tả ngắn`, ví dụ `docs(srs)`, `docs(erd)`, `docs(wireframe)`, `docs(ai)`.
-- **Commit:** `docs(design): thêm thay-doi-thiet-ke.md ghi lại các thay đổi sau góp ý` 
+- **Commit:** `docs(design): them file thay-doi-thiet-ke.md`
