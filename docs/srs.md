@@ -148,13 +148,13 @@ Công ty Cổ phần Bán lẻ & Dịch vụ Mekong Mobile vận hành 24 cửa 
 | FR1 | Tra cứu khách hàng & lịch sử bảo hành qua SĐT | US1 | UC1: Tra cứu thông tin & lịch sử bảo hành | MUST | TC-FR1 (BT3) |
 | FR2 | Tạo mới hồ sơ khách hàng khi SĐT chưa tồn tại | US2 | UC2: Tạo mới thông tin khách hàng | MUST | TC-FR2 (BT3) |
 | FR3 | Chọn thiết bị từ lịch sử hoặc nhập mới IMEI/Serial, kiểm tra bảo hành | US3 | UC3: Ghi nhận thông tin thiết bị & mô tả lỗi | MUST | TC-FR3 (BT3) |
-| FR4 | Ghi nhận mô tả lỗi, đính kèm ảnh/video | US4 | UC3: Ghi nhận thông tin thiết bị & mô tả lỗi | SHOULD | TC-FR4 (BT3) |
-| FR5 | Gán nhóm sự cố, chọn mức ưu tiên | US5 | UC4: Phân loại nhóm sự cố & mức ưu tiên | SHOULD | TC-FR5 (BT3) |
-| FR6 | Tự động tính & hiển thị SLA theo mức ưu tiên | US6 | UC5: Tự động tính toán thời hạn cam kết SLA | SHOULD | TC-FR6 (BT3) |
-| FR7 | Khởi tạo phiếu trạng thái MỚI, ghi lịch sử, gửi thông báo cho kỹ thuật | US7 | UC6: Khởi tạo phiếu bảo hành & gửi thông báo | SHOULD | TC-FR7 (BT3) |
-| FR8 | In/xuất phiếu biên nhận PDF | US8 | UC8: In/Xuất phiếu biên nhận PDF | COULD | TC-FR8 (BT3) |
-| FR9 | Quản lý thiết lập thời gian xử lý SLA theo mức ưu tiên | US9 | UC7: Cấu hình quy tắc SLA & xem tổng quan | COULD | TC-FR9 (BT3) |
-| FR10 | Quản lý xem tổng quan danh sách phiếu tiếp nhận | US9 | UC7: Cấu hình quy tắc SLA & xem tổng quan | COULD | TC-FR10 (BT3) |
+| FR4 | Ghi nhận mô tả lỗi, đính kèm ảnh/video | US3 | UC3: Ghi nhận thông tin thiết bị & mô tả lỗi | SHOULD | TC-FR4 (BT3) |
+| FR5 | Gán nhóm sự cố, chọn mức ưu tiên | US4 | UC4: Phân loại nhóm sự cố & mức ưu tiên | SHOULD | TC-FR5 (BT3) |
+| FR6 | Tự động tính & hiển thị SLA theo mức ưu tiên | US4 | UC5: Tự động tính toán thời hạn cam kết SLA | SHOULD | TC-FR6 (BT3) |
+| FR7 | Khởi tạo phiếu trạng thái MỚI, ghi lịch sử, gửi thông báo cho kỹ thuật | US5 | UC6: Khởi tạo phiếu bảo hành & gửi thông báo | SHOULD | TC-FR7 (BT3) |
+| FR8 | In/xuất phiếu biên nhận PDF | US6 | UC8: In/Xuất phiếu biên nhận PDF | COULD | TC-FR8 (BT3) |
+| FR9 | Quản lý thiết lập thời gian xử lý SLA theo mức ưu tiên | US7 | UC7: Cấu hình quy tắc SLA & xem tổng quan | COULD | TC-FR9 (BT3) |
+| FR10 | Quản lý xem tổng quan danh sách phiếu tiếp nhận | US7 | UC7: Cấu hình quy tắc SLA & xem tổng quan | COULD | TC-FR10 (BT3) |
 
 ---
 
