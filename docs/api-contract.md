@@ -183,7 +183,7 @@ Response **201 Created** (ghi bảng `ticket` ở trạng thái MOI và dòng đ
 Các response lỗi:
 - **400** `VALIDATION_FAILED` – thiếu hoặc sai trường (luồng 3a của UC6).
 - **404** `CUSTOMER_NOT_FOUND` hoặc `DEVICE_NOT_FOUND`.
-- **409** `DEVICE_HAS_OPEN_TICKET` – thiết bị đang có phiếu chưa đóng (trạng thái khác DA_DONG, DA_HUY, HOAN_TAT). `[BẠN QUYẾT ĐỊNH]` Quy tắc này lấy từ ví dụ của mẫu, chưa có trong case study; nếu giữ thì cần thêm một BR vào SRS, nếu không thì xóa dòng này.
+- **409** `DEVICE_HAS_OPEN_TICKET` – thiết bị đang có phiếu chưa đóng (trạng thái khác DA_DONG, DA_HUY, HOAN_TAT). Quy tắc này lấy từ ví dụ của mẫu, chưa có trong case study; nếu giữ thì cần thêm một BR vào SRS, nếu không thì xóa dòng này.
 - **422** `DEVICE_NOT_OWNED` – thiết bị không thuộc khách hàng; **422** `SLA_NOT_CONFIGURED` (luồng 5a).
 
 Ghi chú nghiệp vụ: thiết bị chưa xác minh bảo hành vẫn trả **201** với `warranty_status = "CHUA_XAC_MINH"` và `is_warranty = false` (luồng 4a; việc phê duyệt nằm ngoài phạm vi, W6). Thiết bị hết hạn bảo hành vẫn trả **201** với `is_warranty = false` (luồng 4b). Thông báo cho kỹ thuật viên thể hiện qua việc phiếu xuất hiện trong E9 với `status = MOI`; không có trường trạng thái gửi thông báo.
