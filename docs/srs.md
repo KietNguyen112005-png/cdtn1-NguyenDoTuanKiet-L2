@@ -68,41 +68,50 @@ Công ty Cổ phần Bán lẻ & Dịch vụ Mekong Mobile vận hành 24 cửa 
 
 ### 3.2. Danh sách User Story (kèm mức ưu tiên MoSCoW)
 
-US1 (MUST): Là nhân viên tiếp nhận, tôi muốn nhập số điện thoại khách hàng để tra cứu thông tin cá nhân và lịch sử bảo hành, nhờ đó tôi nhận diện khách cũ trong vài giây và không phải hỏi lại hay nhập lại thông tin.
--AC1 (Tra cứu thành công khách hàng đã tồn tại):
--GIVEN số điện thoại đã có thông tin trên hệ thống.
--WHEN nhân viên nhập số điện thoại vào ô tìm kiếm và bấm nút Tra cứu.
--THEN hệ thống tự động điền thông tin (Họ tên, Địa chỉ) và hiển thị bảng danh sách các lần bảo hành trước đó.
--AC2 (Ngoại lệ – không tìm thấy khách hàng):
--GIVEN số điện thoại 0988888888 chưa từng tồn tại trên hệ thống.
--WHEN nhân viên nhập 0988888888 và bấm nút Tra cứu.
--THEN hệ thống hiển thị thông báo "Không tìm thấy thông tin khách hàng" kèm nút Tạo khách hàng mới.
-US2 (MUST): Là nhân viên tiếp nhận, tôi muốn tạo mới thông tin khách hàng khi số điện thoại chưa tồn tại để tiếp tục quy trình tiếp nhận bảo hành mà không bị gián đoạn.
--AC1 (Tạo mới thành công hợp lệ):
--GIVEN biểu mẫu tạo khách hàng mới đang mở với số điện thoại 0988888888 đã tự điền sẵn.
--WHEN nhân viên nhập đầy đủ Họ tên "Nguyễn Văn A" và bấm Lưu thông tin.
--THEN hệ thống khởi tạo hồ sơ mới, cấp mã khách hàng và tự động chọn khách hàng này cho phiếu đang tạo.
--AC2 (Ngoại lệ – thiếu trường bắt buộc):
--GIVEN biểu mẫu tạo khách hàng mới đang mở.
--WHEN nhân viên để trống ô Họ tên và bấm Lưu thông tin.
--THEN hệ thống từ chối lưu, hiển thị cảnh báo đỏ "Họ tên khách hàng là bắt buộc" và giữ nguyên dữ liệu đã nhập.
-US3 (MUST): Là nhân viên tiếp nhận, tôi muốn chọn thiết bị từ lịch sử mua hàng hoặc nhập mã IMEI/Serial mới, đồng thời ghi nhận mô tả chi tiết lỗi và đính kèm hình ảnh/video hiện trạng thiết bị để xác định chính xác sản phẩm, kiểm tra thời hạn bảo hành và cung cấp đầy đủ thông tin đầu vào cho kỹ thuật viên.
--AC1 (Chọn thiết bị có trong lịch sử mua hàng):
--GIVEN khách hàng được chọn đã có lịch sử mua sản phẩm "iPhone 13" trên hệ thống.
--WHEN nhân viên chọn "iPhone 13" từ danh sách gợi ý.
--THEN hệ thống tự động điền Model, mã IMEI/Serial và hiển thị trạng thái "Còn bảo hành (Hạn đến 12/2026)".
--AC2 (Nhập thiết bị ngoài lịch sử – không có ngày mua): 
--GIVEN thiết bị mang đến không có dữ liệu trong lịch sử mua hàng của khách.
--WHEN nhân viên chọn Nhập thiết bị ngoài và điền mã IMEI 861234567890123.
--THEN hệ thống ghi nhận thiết bị, gắn nhãn "Chưa xác minh bảo hành" và yêu cầu ghi chú thêm thông tin hóa đơn/nguồn gốc mua hàng.
--AC3 (Ngoại lệ – bỏ trống mô tả lỗi): 
--GIVEN nhân viên đã chọn thiết bị cần bảo hành.
--WHEN nhân viên để trống ô Mô tả lỗi và bấm Tiếp tục.
--THEN hệ thống từ chối, hiển thị cảnh báo đỏ "Mô tả lỗi là bắt buộc" và giữ nguyên dữ liệu đã nhập.
-US4 (SHOULD): Là nhân viên tiếp nhận, tôi muốn gán nhóm sự cố, chọn mức độ ưu tiên và được hệ thống tự động tính toán thời hạn cam kết (SLA) dựa trên mức ưu tiên đó để điều phối phiếu đến đúng bộ phận chuyên trách, sắp xếp thứ tự xử lý phù hợp và báo chính xác thời gian trả máy cho khách hàng.
-US5 (SHOULD): Là nhân viên tiếp nhận, tôi muốn khởi tạo phiếu bảo hành ở trạng thái MỚI và tự động gửi thông báo đến bộ phận kỹ thuật để chuyển giao công việc tức thì.
-US6 (COULD): Là nhân viên tiếp nhận, tôi muốn in phiếu biên nhận (hoặc xuất file PDF) để cung cấp cho khách hàng làm chứng từ xác nhận khi gửi máy bảo hành.
-US7 (COULD):  Là quản lý trung tâm, tôi muốn thiết lập thời gian xử lý SLA theo mức ưu tiên và xem tổng quan danh sách phiếu tiếp nhận để điều chỉnh cam kết cho phù hợp năng lực và phát hiện sớm phiếu sắp quá hạn.
+**US1 (MUST):** Là nhân viên tiếp nhận, tôi muốn nhập số điện thoại khách hàng để tra cứu thông tin cá nhân và lịch sử bảo hành, **nhờ đó** tôi nhận diện khách cũ trong vài giây và không phải hỏi lại hay nhập lại thông tin.
+
+- **AC1 (Tra cứu thành công khách hàng đã tồn tại):**
+  - **GIVEN** số điện thoại đã có thông tin trên hệ thống.
+  - **WHEN** nhân viên nhập số điện thoại vào ô tìm kiếm và bấm nút Tra cứu.
+  - **THEN** hệ thống tự động điền thông tin (Họ tên, Địa chỉ) và hiển thị bảng danh sách các lần bảo hành trước đó.
+- **AC2 (Ngoại lệ – không tìm thấy khách hàng):**
+  - **GIVEN** số điện thoại 0988888888 chưa từng tồn tại trên hệ thống.
+  - **WHEN** nhân viên nhập 0988888888 và bấm nút Tra cứu.
+  - **THEN** hệ thống hiển thị thông báo *"Không tìm thấy thông tin khách hàng"* kèm nút Tạo khách hàng mới.
+
+**US2 (MUST):** Là nhân viên tiếp nhận, tôi muốn tạo mới thông tin khách hàng khi số điện thoại chưa tồn tại để tiếp tục quy trình tiếp nhận bảo hành mà không bị gián đoạn.
+
+- **AC1 (Tạo mới thành công hợp lệ):**
+  - **GIVEN** biểu mẫu tạo khách hàng mới đang mở với số điện thoại 0988888888 đã tự điền sẵn.
+  - **WHEN** nhân viên nhập đầy đủ Họ tên "Nguyễn Văn A" và bấm Lưu thông tin.
+  - **THEN** hệ thống khởi tạo hồ sơ mới, cấp mã khách hàng và tự động chọn khách hàng này cho phiếu đang tạo.
+- **AC2 (Ngoại lệ – thiếu trường bắt buộc):**
+  - **GIVEN** biểu mẫu tạo khách hàng mới đang mở.
+  - **WHEN** nhân viên để trống ô Họ tên và bấm Lưu thông tin.
+  - **THEN** hệ thống từ chối lưu, hiển thị cảnh báo đỏ "Họ tên khách hàng là bắt buộc" và giữ nguyên dữ liệu đã nhập.
+
+**US3 (MUST):** Là nhân viên tiếp nhận, tôi muốn chọn thiết bị từ lịch sử mua hàng hoặc nhập mã IMEI/Serial mới, đồng thời ghi nhận mô tả chi tiết lỗi và đính kèm hình ảnh/video hiện trạng thiết bị để xác định chính xác sản phẩm, kiểm tra thời hạn bảo hành và cung cấp đầy đủ thông tin đầu vào cho kỹ thuật viên.
+
+- **AC1 (Chọn thiết bị có trong lịch sử mua hàng):**
+  - **GIVEN** khách hàng được chọn đã có lịch sử mua sản phẩm "iPhone 13" trên hệ thống.
+  - **WHEN** nhân viên chọn "iPhone 13" từ danh sách gợi ý.
+  - **THEN** hệ thống tự động điền Model, mã IMEI/Serial và hiển thị trạng thái "Còn bảo hành (Hạn đến 12/2026)".
+- **AC2 (Nhập thiết bị ngoài lịch sử – không có ngày mua):**
+  - **GIVEN** thiết bị mang đến không có dữ liệu trong lịch sử mua hàng của khách.
+  - **WHEN** nhân viên chọn Nhập thiết bị ngoài và điền mã IMEI 861234567890123.
+  - **THEN** hệ thống ghi nhận thiết bị, gắn nhãn "Chưa xác minh bảo hành" và yêu cầu ghi chú thêm thông tin hóa đơn/nguồn gốc mua hàng.
+- **AC3 (Ngoại lệ – bỏ trống mô tả lỗi):**
+  - **GIVEN** nhân viên đã chọn thiết bị cần bảo hành.
+  - **WHEN** nhân viên để trống ô Mô tả lỗi và bấm Tiếp tục.
+  - **THEN** hệ thống từ chối, hiển thị cảnh báo đỏ "Mô tả lỗi là bắt buộc" và giữ nguyên dữ liệu đã nhập.
+
+**US4 (SHOULD):** Là nhân viên tiếp nhận, tôi muốn gán nhóm sự cố, chọn mức độ ưu tiên và được hệ thống tự động tính toán thời hạn cam kết (SLA) dựa trên mức ưu tiên đó để điều phối phiếu đến đúng bộ phận chuyên trách, sắp xếp thứ tự xử lý phù hợp và báo chính xác thời gian trả máy cho khách hàng.
+
+**US5 (SHOULD):** Là nhân viên tiếp nhận, tôi muốn khởi tạo phiếu bảo hành ở trạng thái MỚI và tự động gửi thông báo đến bộ phận kỹ thuật để chuyển giao công việc tức thì.
+
+**US6 (COULD):** Là nhân viên tiếp nhận, tôi muốn in phiếu biên nhận (hoặc xuất file PDF) để cung cấp cho khách hàng làm chứng từ xác nhận khi gửi máy bảo hành.
+
+**US7 (COULD):** Là quản lý trung tâm, tôi muốn thiết lập thời gian xử lý SLA theo mức ưu tiên và xem tổng quan danh sách phiếu tiếp nhận để điều chỉnh cam kết cho phù hợp năng lực và phát hiện sớm phiếu sắp quá hạn.
 
 ---
 
