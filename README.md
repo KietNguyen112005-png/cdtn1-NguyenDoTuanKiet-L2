@@ -25,10 +25,18 @@ Lưu ý: hệ thống cần một PostgreSQL đang chạy trước khi chạy `n
 
 1. Lấy mã nguồn, một trong hai cách:
    - Clone: `git clone https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2.git`
-   - Hoặc tải ZIP: trên trang repo bấm **Code → Download ZIP**, giải nén (thư mục có đuôi `-main`).
-2. Mở VS Code, chọn **File → Open Folder**, chọn thư mục dự án (thư mục có `package.json`).
-3. Mở terminal: **Terminal → New Terminal** (đảm bảo terminal đang ở thư mục dự án).
-4. Cài thư viện và tạo `.env`:
+   - Hoặc tải ZIP: trên trang repo bấm **Code → Download ZIP**, rồi giải nén.
+2. Mở VS Code, chọn **File → Open Folder**, chọn thư mục **chứa file `package.json`**.
+   - Lưu ý khi tải ZIP: lúc giải nén, Windows thường tạo thêm một thư mục lồng bên trong cùng tên (ví dụ `cdtn1-NguyenDoTuanKiet-L2-main\cdtn1-NguyenDoTuanKiet-L2-main`). Mã nguồn nằm ở thư mục **bên trong**, hãy mở thư mục đó, không mở thư mục ngoài.
+3. Mở terminal: **Terminal → New Terminal**, rồi kiểm tra đang ở đúng thư mục:
+
+```bash
+ls package.json
+```
+
+Trên PowerShell dùng `dir package.json`. Nếu báo không tìm thấy file, bạn đang ở thư mục ngoài: chạy `cd` vào thư mục bên trong (ví dụ `cd cdtn1-NguyenDoTuanKiet-L2-main`) rồi kiểm tra lại cho đến khi thấy `package.json`.
+
+4. Cài thư viện và tạo `.env` (chạy trong thư mục có `package.json`):
 
 ```bash
 npm install
