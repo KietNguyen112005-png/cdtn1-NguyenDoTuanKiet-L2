@@ -15,7 +15,7 @@ Hệ thống gồm backend Node.js (Express) và cơ sở dữ liệu PostgreSQL
 - Node.js: v20 LTS trở lên (kiểm tra bằng `node -v`)
 - Trình quản lý gói: npm v10.x
 - Cơ sở dữ liệu: PostgreSQL 16 trở lên (đã chạy thử trên bản 18). Có hai cách: dùng Docker (đã có sẵn `docker-compose.yml`) hoặc dùng PostgreSQL cài sẵn trên máy.
-- Biến môi trường: tạo file `.env` từ `.env.example`, gồm `DATABASE_URL` (chuỗi kết nối PostgreSQL), `PORT` (cổng ứng dụng, mặc định 3000) và `SLA_TZ_OFFSET_MINUTES` (lệch múi giờ khi tính SLA, Việt Nam là 420). File `.env` thật nằm trong `.gitignore`, không được commit.
+- Biến môi trường: tạo file `.env` từ `.env.example`, gồm `DATABASE_URL` (chuỗi kết nối PostgreSQL), `PORT` (cổng ứng dụng, mặc định 3000) và `SLA_TZ_OFFSET_MINUTES` (lệch múi giờ khi tính SLA, Việt Nam là 420) và `AUTH_USERNAME`, `AUTH_PASSWORD`, `AUTH_SECRET` (tài khoản đăng nhập và khóa ký phiên, bắt buộc phải có). File `.env` thật nằm trong `.gitignore`, không được commit.
 
 ## 3. Hướng dẫn chạy
 
@@ -59,7 +59,7 @@ npm start
 - `npm run setup` chạy `migrate` (dựng bảng từ cơ sở dữ liệu trống) rồi `seed` (nạp dữ liệu mẫu).
 - Sau `npm start`, hệ thống chạy tại `http://localhost:3000`.
 
-Kiểm tra hệ thống đã chạy đúng: mở trình duyệt vào `http://localhost:3000/health`, kết quả phải là `{"status":"ok"}`. Có thể thử thêm các yêu cầu mẫu trong file `requests.http` (dùng extension REST Client của VS Code).
+Kiểm tra hệ thống đã chạy đúng: mở trình duyệt vào `http://localhost:3000/health`, kết quả phải là `{"status":"ok"}`. Giao diện web nằm tại `http://localhost:3000`: đăng nhập bằng `AUTH_USERNAME` và `AUTH_PASSWORD` trong `.env` (giá trị mẫu trong `.env.example` là `nhanvien` / `doi-mat-khau-nay`). Có thể thử thêm các yêu cầu mẫu trong file `requests.http` (dùng extension REST Client của VS Code).
 
 ### Chạy lại lần hai (không lỗi, không nhân đôi dữ liệu)
 
@@ -89,6 +89,9 @@ cdtn1-nguyendotuankiet-l2/
 │   ├── repositories/          # Lớp truy cập dữ liệu, chỉ chứa SQL
 │   ├── rules/                 # Quy tắc thuần: bảo hành, SLA, vòng đời trạng thái, mã phiếu
 │   └── validators/            # Kiểm tra dữ liệu đầu vào
+├── public/                    # Giao diện web (HTML + JS thuần), do chính server phục vụ
+│   ├── index.html             # Khung trang và ba màn hình: khách hàng, tạo phiếu, danh sách phiếu
+│   └── js/                    # api-client.js (lớp client API riêng) và app.js (màn hình, ba trạng thái)
 ├── migrations/                # Dựng cơ sở dữ liệu từ trạng thái trống (chạy lại được)
 ├── seeds/                     # Dữ liệu mẫu để hệ thống không lên trống trơn
 ├── scripts/                   # Lệnh migrate và seed
@@ -142,6 +145,8 @@ Quy tắc nghiệp vụ đã hiện thực (mã BR theo `docs/srs.md`):
 | Phương thức | Đường dẫn | Ý nghĩa |
 |---|---|---|
 | GET | `/health` | Kiểm tra hệ thống đang chạy |
+| POST | `/auth/login` | Đăng nhập, trả token. Mọi API bên dưới cần header `Authorization: Bearer <token>` |
+| GET | `/catalog/categories`, `/catalog/devices?customerId=` | Danh sách nhóm sự cố và thiết bị của khách (dùng cho màn hình tạo phiếu) |
 | POST, GET | `/customers`, `/customers?phone=...` | Tạo khách hàng, tra cứu theo số điện thoại |
 | GET, PUT, DELETE | `/customers/:id` | Đọc, sửa, ngừng hoạt động khách hàng |
 | POST, GET | `/tickets`, `/tickets?status=...` | Tạo phiếu, liệt kê phiếu theo trạng thái |
@@ -157,6 +162,6 @@ Lỗi trả về luôn có dạng `{"error": {"code": "...", "message": "..."}}`
 - [x] Module cốt lõi phía backend: khách hàng và phiếu bảo hành (đủ CRUD, BR1, BR2, BR4, BR5, BR6, BR7)
 - [x] Migration và dữ liệu mẫu chạy lại được, không nhân đôi dữ liệu
 - [x] Bộ kiểm thử ba loại, chạy bằng `npm test`
-- [ ] Giao diện ba màn hình với ba trạng thái (đang tải, rỗng, lỗi)
-- [ ] Đăng nhập cơ bản
+- [x] Giao diện ba màn hình (khách hàng, tạo phiếu, danh sách phiếu) với ba trạng thái (đang tải, rỗng, lỗi có nút Thử lại)
+- [x] Đăng nhập cơ bản
 - [ ] Sơ đồ kiến trúc thực tế và tag `v0.2`
