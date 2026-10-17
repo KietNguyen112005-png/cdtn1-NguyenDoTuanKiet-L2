@@ -14,32 +14,54 @@ Hệ thống gồm backend Node.js (Express) và cơ sở dữ liệu PostgreSQL
 
 - Node.js: v20 LTS trở lên (kiểm tra bằng `node -v`)
 - Trình quản lý gói: npm v10.x
-- Cơ sở dữ liệu: PostgreSQL 16 (cách nhanh nhất là dùng Docker, đã có sẵn `docker-compose.yml`)
+- Cơ sở dữ liệu: PostgreSQL 16 trở lên (đã chạy thử trên bản 18). Có hai cách: dùng Docker (đã có sẵn `docker-compose.yml`) hoặc dùng PostgreSQL cài sẵn trên máy.
 - Biến môi trường: tạo file `.env` từ `.env.example`, gồm `DATABASE_URL` (chuỗi kết nối PostgreSQL), `PORT` (cổng ứng dụng, mặc định 3000) và `SLA_TZ_OFFSET_MINUTES` (lệch múi giờ khi tính SLA, Việt Nam là 420). File `.env` thật nằm trong `.gitignore`, không được commit.
 
 ## 3. Hướng dẫn chạy
 
-Mỗi bước là một lệnh:
+### Bước chung: lấy mã nguồn và cài thư viện
 
 ```bash
 git clone https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2.git
 cd cdtn1-NguyenDoTuanKiet-L2
 npm install
 cp .env.example .env
+```
+
+Trên Windows PowerShell, lệnh tạo `.env` là `Copy-Item .env.example .env`.
+
+### Bước riêng: chuẩn bị cơ sở dữ liệu (chọn một trong hai cách)
+
+**Cách A: dùng Docker**
+
+```bash
 docker compose up -d
+```
+
+**Cách B: dùng PostgreSQL cài sẵn (không cần Docker)**
+
+Tạo người dùng và cơ sở dữ liệu rỗng đúng với `.env.example` (người dùng `crm`, mật khẩu `crm_dev_password`, cơ sở dữ liệu `smart_crm`). Chạy bằng tài khoản quản trị `postgres`, nhập mật khẩu khi được hỏi:
+
+```bash
+psql -U postgres -h localhost -c "CREATE USER crm WITH PASSWORD 'crm_dev_password';"
+psql -U postgres -h localhost -c "CREATE DATABASE smart_crm OWNER crm;"
+```
+
+Trên Windows, nếu `psql` chưa có trong PATH, dùng đường dẫn đầy đủ, ví dụ `& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -h localhost -c "..."` (thay `18` bằng phiên bản đã cài). Nếu dùng tên người dùng, mật khẩu hoặc tên cơ sở dữ liệu khác, sửa `DATABASE_URL` trong `.env` cho khớp.
+
+### Bước cuối: dựng bảng, nạp dữ liệu mẫu và chạy
+
+```bash
 npm run setup
 npm start
 ```
 
-Ghi chú:
-
-- Trên Windows PowerShell, lệnh tạo `.env` là `Copy-Item .env.example .env`.
 - `npm run setup` chạy `migrate` (dựng bảng từ cơ sở dữ liệu trống) rồi `seed` (nạp dữ liệu mẫu).
 - Sau `npm start`, hệ thống chạy tại `http://localhost:3000`.
 
-Kiểm tra hệ thống đã chạy đúng, mở trình duyệt vào `http://localhost:3000/health`, kết quả phải là `{"status":"ok"}`. Có thể thử thêm các yêu cầu mẫu trong file `requests.http` (dùng extension REST Client của VS Code).
+Kiểm tra hệ thống đã chạy đúng: mở trình duyệt vào `http://localhost:3000/health`, kết quả phải là `{"status":"ok"}`. Có thể thử thêm các yêu cầu mẫu trong file `requests.http` (dùng extension REST Client của VS Code).
 
-Chạy lại lần hai (không lỗi, không nhân đôi dữ liệu):
+### Chạy lại lần hai (không lỗi, không nhân đôi dữ liệu)
 
 ```bash
 npm run setup
@@ -73,7 +95,7 @@ cdtn1-nguyendotuankiet-l2/
 ├── tests/                     # Bộ kiểm thử
 ├── data/                      # Dữ liệu mẫu nhỏ của case study (không commit dữ liệu lớn)
 ├── requests.http              # Yêu cầu mẫu để thử API trong VS Code
-├── docker-compose.yml         # Dựng PostgreSQL 16 cho môi trường phát triển
+├── docker-compose.yml         # Dựng PostgreSQL 16 cho môi trường phát triển (tùy chọn)
 ├── .env.example               # Danh sách biến môi trường với giá trị mẫu
 ├── .gitignore                 # Loại trừ node_modules/, .env, *.log, ...
 ├── package.json               # Khai báo thư viện và các lệnh npm
