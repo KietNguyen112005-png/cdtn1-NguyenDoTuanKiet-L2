@@ -27,6 +27,7 @@ Công cụ AI đã sử dụng: **Claude (Anthropic)**, giao diện chat claude.
 | Claude | Chuyển `schema.sql` thành migration chạy lại được và viết dữ liệu mẫu | `migrations/001_init.sql`, `seeds/001_seed.sql`, `scripts/migrate.js`, `scripts/seed.js` | Chạy `npm run setup` hai lần liên tiếp: lần hai không lỗi và báo bỏ qua migration đã áp dụng |
 | Claude | Viết bộ kiểm thử ba loại (luồng đúng, giá trị biên, dữ liệu sai) kèm đối tượng giả | `tests/ticket.service.test.js`, `tests/rules.test.js`, `tests/customer.service.test.js`, `tests/helpers/fakes.js` | Chạy `npm test` trên máy của em, toàn bộ kiểm thử PASS và không cần cơ sở dữ liệu |
 | Claude | Soạn README, `.env.example`, `docker-compose.yml`, `requests.http` | `README.md`, `.env.example`, `docker-compose.yml`, `requests.http` | Làm đúng theo README từng bước trên máy để dựng lại hệ thống từ đầu |
-| Tự làm | (điền sau khi hoàn thành) Giao diện ba màn hình, đăng nhập cơ bản, sơ đồ kiến trúc thực tế | (điền tên tệp) | Không áp dụng |
+| Claude | Soạn giao diện web ba màn hình và lớp client API | `public/index.html`, `public/js/api-client.js`, `public/js/app.js` | (điền việc em đã làm thật, ví dụ tự thử ba trạng thái đang tải, rỗng, lỗi trên trình duyệt) |
+| Claude | Soạn chức năng đăng nhập và kiểm thử đăng nhập | `src/services/auth.service.js` (`login`, `verify`), `tests/auth.service.test.js` | (điền việc em đã làm thật, ví dụ chạy `npm test` và thử đăng nhập sai mật khẩu trên giao diện) |
 
 Họ tên: Nguyễn Đỗ Tuấn Kiệt  ·  MSSV: 2374802010260  ·  Ngày: 17/10/2026
