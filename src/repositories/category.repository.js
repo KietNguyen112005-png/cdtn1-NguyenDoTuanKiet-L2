@@ -5,6 +5,11 @@ const map = (r) => r && ({
 });
 
 module.exports = {
+  async list() {
+    const { rows } = await db.query('SELECT * FROM issue_category WHERE is_active ORDER BY category_id');
+    return rows.map(map);
+  },
+
   async findById(id) {
     const { rows } = await db.query('SELECT * FROM issue_category WHERE category_id = $1', [id]);
     return map(rows[0]);
