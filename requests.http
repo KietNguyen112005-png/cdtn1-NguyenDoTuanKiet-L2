@@ -1,0 +1,32 @@
+### 1. Kiểm tra hệ thống
+GET http://localhost:3000/health
+
+### 2. Tra cứu khách theo số điện thoại
+GET http://localhost:3000/customers?phone=0901234567
+
+### 3. Tạo phiếu bảo hành (luồng đúng)
+POST http://localhost:3000/tickets
+Content-Type: application/json
+
+{ "customerId": 1, "deviceId": 1, "categoryId": 2, "issueDesc": "Pin sụt nhanh, máy tự tắt nguồn" }
+
+### 4. Dữ liệu sai: thiếu mô tả lỗi, phải trả 400 kèm tên trường
+POST http://localhost:3000/tickets
+Content-Type: application/json
+
+{ "customerId": 1, "deviceId": 1, "categoryId": 2 }
+
+### 5. Chuyển trạng thái phiếu số 1
+PATCH http://localhost:3000/tickets/1/status
+Content-Type: application/json
+
+{ "toStatus": "DA_PHAN_CONG" }
+
+### 6. Chuyển sai quy tắc (phiếu đã DA_PHAN_CONG nhảy thẳng HOAN_TAT), phải trả 422
+PATCH http://localhost:3000/tickets/1/status
+Content-Type: application/json
+
+{ "toStatus": "HOAN_TAT" }
+
+### 7. Danh sách phiếu
+GET http://localhost:3000/tickets

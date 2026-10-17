@@ -1,0 +1,21 @@
+{
+  "name": "smart-crm-l2",
+  "version": "0.2.0",
+  "description": "Smart CRM – Luồng L2: tiếp nhận và phân loại yêu cầu bảo hành (track SE)",
+  "private": true,
+  "main": "src/server.js",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js",
+    "setup": "npm run migrate && npm run seed",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  }
+}
