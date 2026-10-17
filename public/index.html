@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tiếp nhận bảo hành – Mekong Mobile</title>
+<style>
+:root{--ink:#14202b;--mute:#5b6b7a;--bg:#eef1f4;--panel:#fff;--line:#d3dae1;--accent:#0f766e;--danger:#b42318;--warn:#b54708;--ok:#16794c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
+header{background:var(--ink);color:#fff;display:flex;align-items:center;gap:24px;padding:0 20px;min-height:52px;flex-wrap:wrap}
+header h1{font-size:16px;margin:0;font-weight:600}
+nav{display:flex;gap:4px;flex:1}
+nav button{background:none;border:0;color:#b9c6d2;padding:14px 12px;font:inherit;cursor:pointer;border-bottom:3px solid transparent}
+nav button[aria-selected=true]{color:#fff;border-bottom-color:#5eead4}
+main{max-width:980px;margin:24px auto;padding:0 16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;margin-bottom:16px}
+h2{font-size:18px;margin:0 0 12px}
+label{display:block;font-weight:600;margin:12px 0 4px}
+input,select,textarea{width:100%;max-width:420px;padding:8px 10px;border:1px solid #9aa8b5;border-radius:4px;font:inherit}
+textarea{max-width:640px;min-height:90px}
+button.btn{background:var(--accent);color:#fff;border:0;border-radius:4px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer;margin-top:12px}
+button.btn.ghost{background:#fff;color:var(--ink);border:1px solid #9aa8b5}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #5eead4;outline-offset:1px}
+.row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.state{padding:24px;text-align:center;color:var(--mute);border:1px dashed var(--line);border-radius:6px}
+.state.error{color:var(--danger);border-color:var(--danger);background:#fff5f4}
+.state .btn{margin-top:8px}
+.field-err{color:var(--danger);font-size:13px;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mute);font-weight:600}
+.tbl{overflow-x:auto}
+.badge{display:inline-block;padding:1px 8px;border-radius:10px;border:1px solid var(--line);font-size:13px}
+.late{color:var(--danger);font-weight:600}.good{color:var(--ok);font-weight:600}.warn{color:var(--warn);font-weight:600}
+.sum{margin:0 0 12px;color:var(--mute)}
+.success{border-left:4px solid var(--ok)}
+.hidden{display:none}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Tiếp nhận bảo hành</h1>
+  <nav id="nav" class="hidden" role="tablist">
+    <button data-view="customer" role="tab">Khách hàng</button>
+    <button data-view="ticket" role="tab">Tạo phiếu</button>
+    <button data-view="list" role="tab">Danh sách phiếu</button>
+  </nav>
+  <button id="logout" class="btn ghost hidden" style="margin:0">Đăng xuất</button>
+</header>
+<main id="main"></main>
+<script src="js/api-client.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
