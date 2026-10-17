@@ -47,13 +47,19 @@ Trên Windows PowerShell, lệnh tạo `.env` là `Copy-Item .env.example .env`.
 
 5. Chuẩn bị cơ sở dữ liệu (chọn một trong hai cách):
 
-**Cách A: dùng Docker**
+**Cách A: dùng Docker (chỉ khi máy đã cài Docker Desktop và đang chạy)**
+
+Kiểm tra trước bằng `docker --version`. Nếu hiện số phiên bản thì chạy:
 
 ```bash
 docker compose up -d
 ```
 
-**Cách B: dùng PostgreSQL cài sẵn (không cần Docker)**
+Nếu báo `docker is not recognized` (hoặc `command not found`) nghĩa là máy chưa cài Docker, hãy dùng Cách B bên dưới. Nếu đã cài nhưng lệnh lỗi, mở ứng dụng Docker Desktop, chờ nó báo đang chạy, đóng và mở lại VS Code rồi thử lại.
+
+**Cách B: dùng PostgreSQL cài sẵn (không cần Docker, phù hợp nhất với Windows)**
+
+Cài PostgreSQL 16 trở lên từ postgresql.org nếu chưa có (đặt mật khẩu cho tài khoản `postgres` và ghi nhớ), sau đó:
 
 Tạo người dùng và cơ sở dữ liệu rỗng đúng với `.env.example` (người dùng `crm`, mật khẩu `crm_dev_password`, cơ sở dữ liệu `smart_crm`). Chạy bằng tài khoản quản trị `postgres`, nhập mật khẩu khi được hỏi:
 
