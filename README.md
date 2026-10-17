@@ -19,18 +19,25 @@ Hệ thống gồm backend Node.js (Express) và cơ sở dữ liệu PostgreSQL
 
 ## 3. Hướng dẫn chạy
 
-### Bước chung: lấy mã nguồn và cài thư viện
+Lưu ý: hệ thống cần một PostgreSQL đang chạy trước khi chạy `npm run setup`. Nếu thấy lỗi "Không kết nối được PostgreSQL", hãy làm bước chuẩn bị cơ sở dữ liệu (Cách A hoặc Cách B bên dưới). Có hai nơi để chạy: VS Code trên máy cá nhân, hoặc GitHub Codespaces (chạy ngay trên trình duyệt, không cần cài gì lên máy).
+
+### Chạy trong VS Code trên máy cá nhân
+
+1. Lấy mã nguồn, một trong hai cách:
+   - Clone: `git clone https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2.git`
+   - Hoặc tải ZIP: trên trang repo bấm **Code → Download ZIP**, giải nén (thư mục có đuôi `-main`).
+2. Mở VS Code, chọn **File → Open Folder**, chọn thư mục dự án (thư mục có `package.json`).
+3. Mở terminal: **Terminal → New Terminal** (đảm bảo terminal đang ở thư mục dự án).
+4. Cài thư viện và tạo `.env`:
 
 ```bash
-git clone https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2.git
-cd cdtn1-NguyenDoTuanKiet-L2
 npm install
 cp .env.example .env
 ```
 
 Trên Windows PowerShell, lệnh tạo `.env` là `Copy-Item .env.example .env`.
 
-### Bước riêng: chuẩn bị cơ sở dữ liệu (chọn một trong hai cách)
+5. Chuẩn bị cơ sở dữ liệu (chọn một trong hai cách):
 
 **Cách A: dùng Docker**
 
@@ -49,17 +56,52 @@ psql -U postgres -h localhost -c "CREATE DATABASE smart_crm OWNER crm;"
 
 Trên Windows, nếu `psql` chưa có trong PATH, dùng đường dẫn đầy đủ, ví dụ `& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -h localhost -c "..."` (thay `18` bằng phiên bản đã cài). Nếu dùng tên người dùng, mật khẩu hoặc tên cơ sở dữ liệu khác, sửa `DATABASE_URL` trong `.env` cho khớp.
 
-### Bước cuối: dựng bảng, nạp dữ liệu mẫu và chạy
+6. Dựng bảng, nạp dữ liệu mẫu và chạy:
 
 ```bash
 npm run setup
 npm start
 ```
 
-- `npm run setup` chạy `migrate` (dựng bảng từ cơ sở dữ liệu trống) rồi `seed` (nạp dữ liệu mẫu).
-- Sau `npm start`, hệ thống chạy tại `http://localhost:3000`.
+7. Mở trình duyệt vào `http://localhost:3000` và đăng nhập (xem mục "Kiểm tra hệ thống đã chạy đúng" bên dưới).
 
-Kiểm tra hệ thống đã chạy đúng: mở trình duyệt vào `http://localhost:3000/health`, kết quả phải là `{"status":"ok"}`. Giao diện web nằm tại `http://localhost:3000`: đăng nhập bằng `AUTH_USERNAME` và `AUTH_PASSWORD` trong `.env` (giá trị mẫu trong `.env.example` là `nhanvien` / `doi-mat-khau-nay`). Có thể thử thêm các yêu cầu mẫu trong file `requests.http` (dùng extension REST Client của VS Code).
+### Chạy trong GitHub Codespaces
+
+1. Trên trang repo bấm nút xanh **Code**, chọn thẻ **Codespaces**, bấm **Create codespace on main**. Chờ trình soạn thảo VS Code mở ra trên trình duyệt.
+2. Trong terminal có sẵn ở phía dưới (hoặc **Terminal → New Terminal**), chạy lần lượt:
+
+```bash
+npm install
+cp .env.example .env
+docker compose up -d
+```
+
+Chờ khoảng 10 giây cho cơ sở dữ liệu khởi động. Kiểm tra bằng `docker compose ps`, trạng thái phải là `healthy` hoặc `running`.
+
+3. Dựng bảng, nạp dữ liệu mẫu, kiểm thử và chạy:
+
+```bash
+npm run setup
+npm test
+npm start
+```
+
+4. Khi `npm start` chạy, Codespaces hiện thông báo "Your application running on port 3000 is available". Bấm **Open in Browser**, hoặc mở thẻ **PORTS** ở thanh dưới và bấm biểu tượng quả địa cầu cạnh cổng 3000.
+
+Nếu Codespace không có Docker (lệnh `docker` báo không tìm thấy), cài PostgreSQL trực tiếp rồi chạy tiếp từ bước 3:
+
+```bash
+sudo apt-get update && sudo apt-get install -y postgresql
+sudo service postgresql start
+sudo -u postgres psql -c "CREATE USER crm WITH PASSWORD 'crm_dev_password';"
+sudo -u postgres psql -c "CREATE DATABASE smart_crm OWNER crm;"
+```
+
+### Kiểm tra hệ thống đã chạy đúng
+
+- Mở `http://localhost:3000/health`, kết quả phải là `{"status":"ok"}`.
+- Giao diện web nằm tại `http://localhost:3000`. Đăng nhập bằng `AUTH_USERNAME` và `AUTH_PASSWORD` trong `.env` (giá trị mẫu trong `.env.example` là `nhanvien` / `doi-mat-khau-nay`).
+- Có thể thử thêm các yêu cầu mẫu trong file `requests.http` (dùng extension REST Client của VS Code; các yêu cầu cần đăng nhập trước bằng `POST /auth/login`).
 
 ### Chạy lại lần hai (không lỗi, không nhân đôi dữ liệu)
 
