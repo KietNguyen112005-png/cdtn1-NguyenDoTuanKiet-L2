@@ -8,7 +8,7 @@ function makeTicketDeps(overrides = {}) {
   const deps = {
     clock: { now: () => FIXED_NOW },
     customerRepo: {
-      findById: async (id) => (id === 1 ? { id: 1, fullName: 'Nguyễn Văn B', phone: '0901234567', isActive: true } : null),
+      findById: async (id) => (id === 1 ? { id: 1, fullName: 'Nguyễn Văn B', phone: '0937482915', isActive: true } : null),
     },
     deviceRepo: {
       findById: async (id) => (id === 10
