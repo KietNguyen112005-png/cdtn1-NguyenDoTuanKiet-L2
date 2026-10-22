@@ -5,6 +5,7 @@ const map = (r) => r && ({
   deviceId: Number(r.device_id), categoryId: r.category_id, priority: r.priority,
   issueDesc: r.issue_desc, status: r.status, receivedAt: r.received_at, dueDate: r.due_date,
   isWarranty: r.is_warranty, closedAt: r.closed_at,
+  customerName: r.customer_name, customerPhone: r.customer_phone, // chỉ có khi truy vấn danh sách
 });
 
 module.exports = {
@@ -40,12 +41,14 @@ module.exports = {
   async list({ status, customerId, limit, offset }) {
     const where = [];
     const params = [];
-    if (status) { params.push(status); where.push(`status = $${params.length}`); }
-    if (customerId) { params.push(customerId); where.push(`customer_id = $${params.length}`); }
+    if (status) { params.push(status); where.push(`t.status = $${params.length}`); }
+    if (customerId) { params.push(customerId); where.push(`t.customer_id = $${params.length}`); }
     params.push(limit, offset);
     const { rows } = await db.query(
-      `SELECT * FROM ticket ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
-       ORDER BY due_date ASC LIMIT $${params.length - 1} OFFSET $${params.length}`,
+      `SELECT t.*, c.full_name AS customer_name, c.phone AS customer_phone
+       FROM ticket t JOIN customer c ON c.customer_id = t.customer_id
+       ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
+       ORDER BY t.due_date ASC LIMIT $${params.length - 1} OFFSET $${params.length}`,
       params,
     );
     return rows.map(map);

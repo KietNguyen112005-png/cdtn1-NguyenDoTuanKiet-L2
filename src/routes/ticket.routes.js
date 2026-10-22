@@ -3,7 +3,7 @@ const wrap = require('./async-handler');
 
 module.exports = function ticketRoutes(ticketService) {
   const router = express.Router();
-  const actorOf = (req) => (req.user && req.user.username) || 'system';
+  const actorOf = () => 'system';
 
   router.post('/', wrap(async (req, res) => {
     res.status(201).json({ data: await ticketService.create(req.body, actorOf(req)) });
