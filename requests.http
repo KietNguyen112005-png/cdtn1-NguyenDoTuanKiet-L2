@@ -1,10 +1,10 @@
 ### 1. Kiểm tra hệ thống
 GET http://localhost:3000/health
 
-### 2. Tra cứu khách theo số điện thoại
-GET http://localhost:3000/customers?phone=0901234567
+### 2. Tra cứu khách theo số điện thoại (số trong dữ liệu mẫu)
+GET http://localhost:3000/customers?phone=0937482915
 
-### 3. Tạo phiếu bảo hành (luồng đúng)
+### 3. Tạo phiếu bảo hành (luồng đúng, thiết bị mẫu số 1)
 POST http://localhost:3000/tickets
 Content-Type: application/json
 
@@ -28,5 +28,5 @@ Content-Type: application/json
 
 { "toStatus": "HOAN_TAT" }
 
-### 7. Danh sách phiếu
+### 7. Danh sách phiếu (kèm tên và số điện thoại khách)
 GET http://localhost:3000/tickets
