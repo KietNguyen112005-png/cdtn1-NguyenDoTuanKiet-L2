@@ -32,6 +32,8 @@ function makeTicketDeps(overrides = {}) {
         return t;
       },
       updateDescription: async (id, desc) => ({ ...tickets.get(id), issueDesc: desc }),
+      findByCode: async (code) => [...tickets.values()].find((t) => t.ticketCode === code) || null,
+      listHistory: async () => [{ fromStatus: null, toStatus: 'MOI', changedAt: FIXED_NOW, changedBy: 'system' }],
     },
     ...overrides,
   };
