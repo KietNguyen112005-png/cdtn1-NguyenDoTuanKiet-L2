@@ -13,6 +13,14 @@ module.exports = function ticketRoutes(ticketService) {
     res.json({ data: await ticketService.list(req.query) });
   }));
 
+  router.get('/lookup', wrap(async (req, res) => { // tra phiếu theo mã: /tickets/lookup?code=BH-000001%2F2026
+    res.json({ data: await ticketService.detailByCode(req.query.code) });
+  }));
+
+  router.get('/:id/detail', wrap(async (req, res) => {
+    res.json({ data: await ticketService.detail(Number(req.params.id)) });
+  }));
+
   router.get('/:id', wrap(async (req, res) => {
     res.json({ data: await ticketService.get(Number(req.params.id)) });
   }));

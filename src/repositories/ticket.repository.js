@@ -33,6 +33,19 @@ module.exports = {
     });
   },
 
+  async findByCode(code) {
+    const { rows } = await db.query('SELECT * FROM ticket WHERE ticket_code = $1', [code]);
+    return map(rows[0]);
+  },
+
+  // Lịch sử trạng thái của một phiếu (BR5), từ cũ đến mới.
+  async listHistory(ticketId) {
+    const { rows } = await db.query(
+      `SELECT from_status, to_status, changed_at, changed_by FROM ticket_status_log
+       WHERE ticket_id = $1 ORDER BY changed_at, log_id`, [ticketId]);
+    return rows.map((r) => ({ fromStatus: r.from_status, toStatus: r.to_status, changedAt: r.changed_at, changedBy: r.changed_by }));
+  },
+
   async findById(id) {
     const { rows } = await db.query('SELECT * FROM ticket WHERE ticket_id = $1', [id]);
     return map(rows[0]);
