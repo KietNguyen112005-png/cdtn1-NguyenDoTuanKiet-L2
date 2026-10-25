@@ -117,7 +117,7 @@ function listView() {
       h('div', { class: 'tbl' }, h('table', {}, h('thead', {}, h('tr', {}, ...['Mã phiếu', 'Khách hàng', 'Số điện thoại', 'Trạng thái', 'Ưu tiên', 'Hạn cam kết', 'Bảo hành', 'Chuyển trạng thái'].map((t) => h('th', {}, t)))),
         h('tbody', {}, tickets.map((t) => {
           const over = !['DA_DONG', 'DA_HUY', 'HOAN_TAT'].includes(t.status) && new Date(t.dueDate) < now;
-          return h('tr', {}, h('td', {}, t.ticketCode), h('td', {}, t.customerName), h('td', {}, t.customerPhone), h('td', {}, h('span', { class: 'badge' }, LABEL[t.status])), h('td', {}, PRIO[t.priority]),
+          return h('tr', {}, h('td', {}, h('button', { class: 'linklike', title: 'Xem chi tiết phiếu', onclick: () => go('detail', t.ticketCode) }, t.ticketCode)), h('td', {}, t.customerName), h('td', {}, t.customerPhone), h('td', {}, h('span', { class: 'badge' }, LABEL[t.status])), h('td', {}, PRIO[t.priority]),
             h('td', { class: over ? 'late' : '' }, fmt(t.dueDate), over ? ' (quá hạn)' : ''), h('td', {}, t.isWarranty ? 'Còn bảo hành' : 'Ngoài bảo hành hoặc chưa xác minh'),
             h('td', {}, NEXT[t.status].map((s) => h('button', { class: 'btn ghost', style: 'margin:0 4px 4px 0', onclick: async (e) => {
               e.target.disabled = true;
@@ -129,11 +129,64 @@ function listView() {
   return panel(h('h2', {}, 'Danh sách phiếu (sắp theo hạn cam kết)'), h('label', { for: 'status' }, 'Lọc theo trạng thái'), filter, h('div', { style: 'margin-top:16px' }, body));
 }
 
+// ---------- Màn hình 3: chi tiết phiếu và lịch sử trạng thái (BR5) ----------
+const span = (ms) => {
+  const m = Math.round(Math.abs(ms) / 60000); const d = Math.floor(m / 1440); const hr = Math.floor((m % 1440) / 60);
+  return d ? `${d} ngày ${hr} giờ` : hr ? `${hr} giờ ${m % 60} phút` : `${m} phút`;
+};
+
+function detailView(code) {
+  const body = h('div');
+  const input = h('input', { id: 'tcode', placeholder: 'Ví dụ: BH-000001/2026', value: code || '' });
+  const search = () => load(body, () => ApiClient.getTicketByCode(input.value.trim()).catch((e) => {
+    if (e.status === 404) return { notFound: true }; throw e; }), (d) => (d.notFound
+    ? empty('Không tìm thấy phiếu', 'Kiểm tra lại mã phiếu, hoặc bấm vào mã phiếu ở màn hình Danh sách phiếu.') : ticketDetail(d)));
+  if (code) search(); else body.replaceChildren(empty('Nhập mã phiếu để xem chi tiết', 'Hoặc bấm vào mã phiếu ở màn hình Danh sách phiếu.'));
+  return panel(h('h2', {}, 'Chi tiết phiếu'),
+    h('form', { onsubmit: (e) => { e.preventDefault(); search(); } }, h('label', { for: 'tcode' }, 'Mã phiếu'),
+      h('div', { class: 'row' }, input, h('button', { class: 'btn', style: 'margin:0', type: 'submit' }, 'Tra cứu'))),
+    h('div', { style: 'margin-top:16px' }, body));
+}
+
+function ticketDetail({ ticket: t, customer, device, category, history }) {
+  const now = Date.now(); const due = new Date(t.dueDate).getTime();
+  const terminal = ['DA_DONG', 'DA_HUY'].includes(t.status);
+  // Mốc so sánh cho hạn cam kết: đã đóng thì so với lúc đóng, chưa đóng thì so với hiện tại.
+  let note; let noteClass = '';
+  if (terminal && t.closedAt) {
+    const diff = new Date(t.closedAt).getTime() - due;
+    note = diff <= 0 ? `Đóng sớm hơn hạn ${span(diff)}` : `Đóng trễ hơn hạn ${span(diff)}`; noteClass = diff <= 0 ? 'good' : 'late';
+  } else if (!terminal) {
+    note = due >= now ? `Còn ${span(due - now)} đến hạn` : `Quá hạn ${span(now - due)}`; noteClass = due >= now ? 'good' : 'late';
+  }
+  const rows = history.map((l, i) => {
+    const start = new Date(l.changedAt).getTime(); const next = history[i + 1];
+    const end = next ? new Date(next.changedAt).getTime() : (terminal ? null : now);
+    return h('tr', {}, h('td', {}, fmt(l.changedAt)),
+      h('td', {}, l.fromStatus ? `${LABEL[l.fromStatus]} → ${LABEL[l.toStatus]}` : `Tạo phiếu (${LABEL[l.toStatus]})`),
+      h('td', {}, l.changedBy), h('td', {}, end === null ? '—' : span(end - start)));
+  });
+  const row = (k, v) => [h('dt', {}, k), h('dd', {}, v)];
+  return h('div', {}, h('h3', {}, `${t.ticketCode} · ${LABEL[t.status]}`),
+    h('dl', { class: 'info' },
+      row('Khách hàng', customer ? `${customer.fullName} · ${customer.phone}` : 'Không rõ'),
+      row('Thiết bị', device ? `${device.modelName} (${device.serialNo})` : 'Không rõ'),
+      row('Nhóm sự cố', category ? (CATEGORY[category.name] || category.name) : 'Không rõ'),
+      row('Mức ưu tiên', PRIO[t.priority]),
+      row('Bảo hành', t.isWarranty ? 'Còn bảo hành' : 'Ngoài bảo hành hoặc chưa xác minh'),
+      row('Tiếp nhận lúc', fmt(t.receivedAt)),
+      row('Hạn cam kết', [fmt(t.dueDate), note && h('span', { class: noteClass }, ` · ${note}`)]),
+      row('Mô tả lỗi', t.issueDesc)),
+    h('h3', {}, 'Lịch sử trạng thái'),
+    history.length ? h('div', { class: 'tbl' }, h('table', {}, h('thead', {}, h('tr', {}, ...['Thời điểm', 'Thay đổi', 'Người thực hiện', 'Ở trạng thái này'].map((x) => h('th', {}, x)))), h('tbody', {}, rows)))
+      : empty('Chưa có lịch sử trạng thái', 'Phiếu này chưa ghi nhận lần chuyển trạng thái nào.'));
+}
+
 // ---------- Điều hướng ----------
-const VIEWS = { ticket: ticketView, list: listView };
-function go(name) {
+const VIEWS = { ticket: ticketView, list: listView, detail: detailView };
+function go(name, arg) {
   $nav.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === name)));
-  $main.replaceChildren(VIEWS[name]());
+  $main.replaceChildren(VIEWS[name](arg));
 }
 $nav.addEventListener('click', (e) => e.target.dataset.view && go(e.target.dataset.view));
 go('ticket');

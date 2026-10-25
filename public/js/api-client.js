@@ -28,6 +28,7 @@ const ApiClient = (() => {
     listDevices: (customerId) => request('GET', `/catalog/devices?customerId=${customerId}`),
     listCategories: () => request('GET', '/catalog/categories'),
     createTicket: (t) => request('POST', '/tickets', t),
+    getTicketByCode: (code) => request('GET', `/tickets/lookup?code=${encodeURIComponent(code)}`),
     listTickets: (status) => request('GET', `/tickets?${q({ status, limit: 100 })}`),
     changeStatus: (id, toStatus) => request('PATCH', `/tickets/${id}/status`, { toStatus }),
   };
