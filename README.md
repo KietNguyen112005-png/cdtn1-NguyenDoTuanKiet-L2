@@ -47,6 +47,8 @@ Trên Windows PowerShell, lệnh tạo `.env` là `Copy-Item .env.example .env`.
 
 5. Chuẩn bị cơ sở dữ liệu (chọn một trong hai cách):
 
+Cách A và Cách B chỉ cần khi máy chưa có cơ sở dữ liệu cho dự án. Nếu máy đã có PostgreSQL với người dùng, mật khẩu và database khớp `DATABASE_URL` trong `.env`, bạn có thể bỏ qua bước này và chạy thẳng `npm run setup`.
+
 **Cách A: dùng Docker (chỉ khi máy đã cài Docker Desktop và đang chạy)**
 
 Kiểm tra trước bằng `docker --version`. Nếu hiện số phiên bản thì chạy:
@@ -125,6 +127,25 @@ npm run setup
 
 `migrate` bỏ qua file đã áp dụng (bảng `schema_migrations`), `seed` dùng `ON CONFLICT DO NOTHING`.
 
+### Nạp bộ dữ liệu đầy đủ (tùy chọn)
+
+Bộ dữ liệu mô phỏng của học phần (file `dataset.zip`, khoảng 13 MB) không nằm trong repo vì quá lớn. Hệ thống vẫn chạy đầy đủ với dữ liệu mẫu nhỏ của `npm run setup`; bước này chỉ để có dữ liệu thật hơn (khoảng 51 nghìn khách, 7 nghìn phiếu lịch sử).
+
+1. Giải nén `dataset.zip`, chép các file `customers_raw.csv`, `products.csv`, `issue_categories.csv`, `tickets_history.csv`, `ticket_status_log.csv` vào thư mục `data/raw/` (thư mục này đã nằm trong `.gitignore`).
+2. Chạy thử, chỉ làm sạch và đếm, chưa ghi vào cơ sở dữ liệu:
+
+```bash
+npm run import:dataset -- data/raw --dry-run
+```
+
+3. Nạp thật (cần đã chạy `npm run setup`). Chạy lại nhiều lần không nhân đôi dữ liệu:
+
+```bash
+npm run import:dataset -- data/raw
+```
+
+Quy tắc làm sạch: số điện thoại được đưa về dạng `0xxxxxxxxx` (bỏ dấu cách, dấu chấm, `+84`); hồ sơ trùng số điện thoại được gộp thành một khách; khách không có số điện thoại hợp lệ và các phiếu của họ bị loại, ghi lý do vào `data/reject/rejected.csv`. Phiếu lịch sử không có ngày mua thiết bị nên thiết bị được nạp với ghi chú nguồn gốc thay cho ngày mua. Hạn cam kết (`due_date`) của phiếu lịch sử do dataset tính bằng giờ lịch đơn giản, chưa bỏ Chủ nhật như BR2 của hệ thống.
+
 ## 4. Cấu trúc thư mục
 
 ```
@@ -146,11 +167,11 @@ cdtn1-nguyendotuankiet-l2/
 │   ├── rules/                 # Quy tắc thuần: bảo hành, SLA, vòng đời trạng thái, mã phiếu
 │   └── validators/            # Kiểm tra dữ liệu đầu vào
 ├── public/                    # Giao diện web (HTML + JS thuần), do chính server phục vụ
-│   ├── index.html             # Khung trang và hai màn hình chính: tạo phiếu (kèm tạo khách và thiết bị mới), danh sách phiếu
+│   ├── index.html             # Khung trang và ba màn hình: tạo phiếu (kèm tạo khách và thiết bị mới), danh sách phiếu, chi tiết phiếu (lịch sử trạng thái)
 │   └── js/                    # api-client.js (lớp client API riêng) và app.js (màn hình, ba trạng thái)
 ├── migrations/                # Dựng cơ sở dữ liệu từ trạng thái trống (chạy lại được)
 ├── seeds/                     # Dữ liệu mẫu để hệ thống không lên trống trơn
-├── scripts/                   # Lệnh migrate và seed
+├── scripts/                   # Lệnh migrate, seed và nạp dataset đầy đủ (import-dataset.js)
 ├── tests/                     # Bộ kiểm thử
 ├── data/                      # Dữ liệu mẫu nhỏ của case study (không commit dữ liệu lớn)
 ├── requests.http              # Yêu cầu mẫu để thử API trong VS Code
@@ -207,6 +228,7 @@ Quy tắc nghiệp vụ đã hiện thực (mã BR theo `docs/srs.md`):
 | GET, PUT, DELETE | `/customers/:id` | Đọc, sửa, ngừng hoạt động khách hàng |
 | POST, GET | `/tickets`, `/tickets?status=...` | Tạo phiếu, liệt kê phiếu theo trạng thái |
 | GET, PUT | `/tickets/:id` | Đọc phiếu, sửa mô tả lỗi |
+| GET | `/tickets/lookup?code=` và `/tickets/:id/detail` | Chi tiết phiếu: khách, thiết bị, nhóm sự cố và lịch sử trạng thái |
 | PATCH | `/tickets/:id/status` | Chuyển trạng thái phiếu (BR5) |
 | DELETE | `/tickets/:id` | Huỷ phiếu (chuyển sang `DA_HUY`) |
 
@@ -218,6 +240,7 @@ Lỗi trả về luôn có dạng `{"error": {"code": "...", "message": "..."}}`
 - [x] Module cốt lõi phía backend: khách hàng và phiếu bảo hành (đủ CRUD, BR1, BR2, BR4, BR5, BR6, BR7)
 - [x] Migration và dữ liệu mẫu chạy lại được, không nhân đôi dữ liệu
 - [x] Bộ kiểm thử ba loại, chạy bằng `npm test`
-- [x] Giao diện: tạo phiếu (nhập số điện thoại, khách cũ hiện thiết bị, khách mới nhập họ tên và thiết bị), danh sách phiếu; có ba trạng thái (đang tải, rỗng, lỗi có nút Thử lại)
+- [x] Giao diện: tạo phiếu (nhập số điện thoại, khách cũ hiện thiết bị, khách mới nhập họ tên và thiết bị), danh sách phiếu, chi tiết phiếu kèm lịch sử trạng thái; có ba trạng thái (đang tải, rỗng, lỗi có nút Thử lại)
+- [x] Nạp được bộ dữ liệu mô phỏng đầy đủ (tùy chọn): làm sạch, gộp khách trùng, ghi dòng bị loại kèm lý do
 - [ ] Đăng nhập cơ bản (không hiện thực, xem `docs/thay-doi-thiet-ke.md`)
 - [ ] Sơ đồ kiến trúc thực tế và tag `v0.2`

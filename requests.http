@@ -30,3 +30,9 @@ Content-Type: application/json
 
 ### 7. Danh sách phiếu (kèm tên và số điện thoại khách)
 GET http://localhost:3000/tickets
+
+### 8. Chi tiết phiếu theo mã (mã có dấu / nên mã hóa thành %2F)
+GET http://localhost:3000/tickets/lookup?code=BH-000001%2F2026
+
+### 9. Chi tiết phiếu theo số thứ tự, kèm lịch sử trạng thái
+GET http://localhost:3000/tickets/1/detail
