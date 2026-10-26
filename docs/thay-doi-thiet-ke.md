@@ -23,15 +23,35 @@ Phần phản hồi của giảng viên về BT1 (mỗi điểm bốn dòng) đ�
 - **Vì sao:** `schema.sql` không có cột `warranty_status`, và trạng thái bảo hành là giá trị suy ra được, lưu thêm sẽ dễ lệch với ngày mua.
 - **Ảnh hưởng:** `src/rules/warranty.js`, `src/services/ticket.service.js`, bảng thuật ngữ mục 1.5 trong `docs/srs.md`.
 
-## 5. Thêm đăng nhập cơ bản và API danh mục
-- **Thay đổi gì:** thêm `POST /auth/login` (tài khoản cấu hình bằng biến môi trường, token ký HMAC có hạn 8 giờ), bắt buộc đăng nhập cho mọi API nghiệp vụ, thêm `GET /catalog/categories` và `GET /catalog/devices`.
-- **Vì sao:** BT2 yêu cầu xác thực đăng nhập mức cơ bản; màn hình tạo phiếu cần danh sách nhóm sự cố và thiết bị của khách mà BT1 chưa có API riêng.
-- **Ảnh hưởng:** `src/services/auth.service.js`, `src/routes/auth.routes.js`, `src/routes/require-auth.js`, `src/routes/catalog.routes.js`, `.env.example` (thêm `AUTH_*`), `docs/api-contract.md`; chưa có bảng người dùng trong `schema.sql`.
-
-## 6. Giao diện web thuần phục vụ cùng máy chủ
-- **Thay đổi gì:** giao diện ba màn hình viết bằng HTML và JavaScript thuần trong `public/`, do chính Express phục vụ, thay cho thư mục `src/client` dùng React dự kiến ở README của BT1.
-- **Vì sao:** đề BT2 chấm chức năng và ba trạng thái chứ không chấm giao diện đẹp; bỏ bước build giúp người khác dựng lại hệ thống chỉ bằng `npm start`.
+## 5. Giao diện web thuần phục vụ cùng máy chủ
+- **Thay đổi gì:** giao diện gồm màn hình đăng nhập, Tạo phiếu và Danh sách phiếu viết bằng HTML và JavaScript thuần trong `public/`, do chính Express phục vụ, thay cho thư mục `src/client` dùng React dự kiến ở README của BT1.
+- **Vì sao:** đề BT2 chấm chức năng và ba trạng thái (đang tải, rỗng, lỗi) chứ không chấm giao diện đẹp; bỏ bước build giúp người khác dựng lại hệ thống chỉ bằng `npm start`.
 - **Ảnh hưởng:** `public/index.html`, `public/js/api-client.js`, `public/js/app.js`, sơ đồ kiến trúc thực tế, cấu trúc thư mục trong `README.md`.
+
+## 6. Gộp tạo khách và tạo thiết bị vào màn hình Tạo phiếu
+- **Thay đổi gì:** bỏ màn hình Khách hàng riêng; ở màn hình Tạo phiếu, nhập số điện thoại rồi Tìm khách: khách cũ hiện tên và thiết bị, khách mới hiện ô họ tên và các ô nhập thiết bị mới; thiết bị không có ngày mua thì bắt buộc ghi chú nguồn gốc mua hàng.
+- **Vì sao:** US1, US2, US3 được làm liền một màn hình để thao tác tại quầy nhanh hơn; khách mới chưa có thiết bị nên phải tạo thiết bị thì mới lập được phiếu (US3-AC2).
+- **Ảnh hưởng:** `public/js/app.js` (`ticketView`, `ticketForm`), `src/validators/device.validator.js`, `src/services/catalog.service.js` (`createDevice`), `src/repositories/device.repository.js`; wireframe BT1 có ba màn hình, nay là Tạo phiếu, Danh sách phiếu và màn hình đăng nhập.
+
+## 7. Danh sách phiếu hiện tên và số điện thoại khách
+- **Thay đổi gì:** `GET /tickets` trả thêm `customerName`, `customerPhone` (truy vấn có JOIN bảng `customer`); màn hình Danh sách phiếu có hai cột Khách hàng và Số điện thoại; tên nhóm sự cố hiển thị bằng tiếng Việt (Màn hình, Pin, Sạc, Phần mềm, Nước vào, Khác), mã trong cơ sở dữ liệu không đổi.
+- **Vì sao:** nhân viên cần biết phiếu của ai và dùng số điện thoại đó để kiểm tra khách ở màn hình Tạo phiếu; nhãn tiếng Việt dễ đọc hơn mã viết hoa.
+- **Ảnh hưởng:** `src/repositories/ticket.repository.js` (`list`), `public/js/app.js` (`listView`, bảng nhãn `CATEGORY`); cấu trúc bảng không đổi.
+
+## 8. Thêm API danh mục và API tạo thiết bị
+- **Thay đổi gì:** thêm `GET /catalog/categories`, `GET /catalog/devices?customerId=` và `POST /catalog/devices`.
+- **Vì sao:** màn hình Tạo phiếu cần danh sách nhóm sự cố, danh sách thiết bị của khách và cách thêm thiết bị mới mà BT1 chưa có API riêng.
+- **Ảnh hưởng:** `src/routes/catalog.routes.js`, `src/services/catalog.service.js`, `src/repositories/category.repository.js`, `src/repositories/device.repository.js`, `docs/api-contract.md`.
+
+## 9. Thêm đăng nhập cơ bản
+- **Thay đổi gì:** thêm `POST /auth/login` (một tài khoản cấu hình bằng biến môi trường `AUTH_*`, token ký HMAC có hạn 8 giờ), bắt buộc đăng nhập cho mọi API nghiệp vụ và thêm màn hình đăng nhập; người thực hiện thao tác ghi trong `ticket_status_log.changed_by` là tên đăng nhập.
+- **Vì sao:** đề BT2 yêu cầu xác thực đăng nhập ở mức cơ bản; BT1 chưa thiết kế phần này.
+- **Ảnh hưởng:** `src/services/auth.service.js`, `src/routes/auth.routes.js`, `src/routes/require-auth.js`, `src/app.js`, `src/config.js`, `.env.example` (thêm `AUTH_*`), `public/js/api-client.js`, `docs/api-contract.md`; BT1 không có bảng người dùng nên schema không đổi.
+
+## 10. Nạp bộ dữ liệu mô phỏng của học phần (tùy chọn)
+- **Thay đổi gì:** thêm lệnh `npm run import:dataset` nạp khách, thiết bị, phiếu và lịch sử trạng thái từ dataset vào 6 bảng (làm sạch số điện thoại, gộp khách trùng, ghi dòng bị loại kèm lý do vào `data/reject/rejected.csv`); khi nạp, mức ưu tiên mặc định của nhóm sự cố được đồng bộ theo `issue_categories.csv` (MAN_HINH là CAO, KHAC là TRUNG_BINH, khác dữ liệu mẫu ban đầu).
+- **Vì sao:** README của dataset hướng dẫn track SE dùng các file này làm dữ liệu thử nghiệm thật; dataset có lỗi cố ý (hồ sơ trùng, số điện thoại nhiều dạng) nên cần bước làm sạch và loại dòng có lý do.
+- **Ảnh hưởng:** `scripts/import-dataset.js`, `scripts/lib/*`, `tests/dataset-prepare.test.js`, `.gitignore` (thêm `data/raw/`, `data/reject/`); schema không đổi, thông tin trung tâm bảo hành và kỹ thuật viên của dataset không nạp vì thuộc luồng khác.
 
 ---
 
