@@ -1,38 +1,50 @@
-### 1. Kiểm tra hệ thống
+### 0. Đăng nhập, lấy token (dùng tài khoản trong .env: AUTH_USERNAME và AUTH_PASSWORD)
+# @name login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{ "username": "nhanvien", "password": "doi-mat-khau-nay" }
+
+@token = {{login.response.body.$.data.token}}
+
+### 1. Kiểm tra hệ thống (không cần đăng nhập)
 GET http://localhost:3000/health
 
 ### 2. Tra cứu khách theo số điện thoại (số trong dữ liệu mẫu)
 GET http://localhost:3000/customers?phone=0937482915
+Authorization: Bearer {{token}}
 
 ### 3. Tạo phiếu bảo hành (luồng đúng, thiết bị mẫu số 1)
 POST http://localhost:3000/tickets
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "customerId": 1, "deviceId": 1, "categoryId": 2, "issueDesc": "Pin sụt nhanh, máy tự tắt nguồn" }
 
 ### 4. Dữ liệu sai: thiếu mô tả lỗi, phải trả 400 kèm tên trường
 POST http://localhost:3000/tickets
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "customerId": 1, "deviceId": 1, "categoryId": 2 }
 
 ### 5. Chuyển trạng thái phiếu số 1
 PATCH http://localhost:3000/tickets/1/status
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "toStatus": "DA_PHAN_CONG" }
 
 ### 6. Chuyển sai quy tắc (phiếu đã DA_PHAN_CONG nhảy thẳng HOAN_TAT), phải trả 422
 PATCH http://localhost:3000/tickets/1/status
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "toStatus": "HOAN_TAT" }
 
 ### 7. Danh sách phiếu (kèm tên và số điện thoại khách)
 GET http://localhost:3000/tickets
+Authorization: Bearer {{token}}
 
-### 8. Chi tiết phiếu theo mã (mã có dấu / nên mã hóa thành %2F)
-GET http://localhost:3000/tickets/lookup?code=BH-000001%2F2026
-
-### 9. Chi tiết phiếu theo số thứ tự, kèm lịch sử trạng thái
-GET http://localhost:3000/tickets/1/detail
+### 8. Không có token thì bị từ chối, phải trả 401
+GET http://localhost:3000/tickets

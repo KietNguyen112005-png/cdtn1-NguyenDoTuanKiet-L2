@@ -15,7 +15,7 @@ Hệ thống gồm backend Node.js (Express) và cơ sở dữ liệu PostgreSQL
 - Node.js: v20 LTS trở lên (kiểm tra bằng `node -v`)
 - Trình quản lý gói: npm v10.x
 - Cơ sở dữ liệu: PostgreSQL 16 trở lên (đã chạy thử trên bản 18). Có hai cách: dùng Docker (đã có sẵn `docker-compose.yml`) hoặc dùng PostgreSQL cài sẵn trên máy.
-- Biến môi trường: tạo file `.env` từ `.env.example`, gồm `DATABASE_URL` (chuỗi kết nối PostgreSQL), `PORT` (cổng ứng dụng, mặc định 3000) và `SLA_TZ_OFFSET_MINUTES` (lệch múi giờ khi tính SLA, Việt Nam là 420). File `.env` thật nằm trong `.gitignore`, không được commit.
+- Biến môi trường: tạo file `.env` từ `.env.example`, gồm `DATABASE_URL` (chuỗi kết nối PostgreSQL), `PORT` (cổng ứng dụng, mặc định 3000) và `SLA_TZ_OFFSET_MINUTES` (lệch múi giờ khi tính SLA, Việt Nam là 420) và `AUTH_USERNAME`, `AUTH_PASSWORD`, `AUTH_SECRET` (tài khoản đăng nhập và khóa ký phiên, bắt buộc phải có). File `.env` thật nằm trong `.gitignore`, không được commit.
 
 ## 3. Hướng dẫn chạy
 
@@ -27,7 +27,7 @@ Lưu ý: hệ thống cần một PostgreSQL đang chạy trước khi chạy `n
    - Clone: `git clone https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2.git`
    - Hoặc tải ZIP: trên trang repo bấm **Code → Download ZIP**, rồi giải nén.
 2. Mở VS Code, chọn **File → Open Folder**, chọn thư mục **chứa file `package.json`**.
-   - Lưu ý khi tải ZIP: lúc giải nén, Windows thường tạo thêm một thư mục lồng bên trong cùng tên (ví dụ `cdtn1-NguyenDoTuanKiet-L2-main\cdtn1-NguyenDoTuanKiet-L2-main`). Mã nguồn nằm ở thư mục **bên trong**, hãy mở thư mục đó, không mở thư mục ngoài.
+   - Lưu ý khi tải ZIP: lúc giải nén trong Downloads, Windows thường tạo thêm một thư mục lồng bên trong cùng tên (ví dụ `cdtn1-NguyenDoTuanKiet-L2-main\cdtn1-NguyenDoTuanKiet-L2-main`). Mã nguồn nằm ở thư mục **bên trong**, hãy mở thư mục đó, không mở thư mục ngoài.
 3. Mở terminal: **Terminal → New Terminal**, rồi kiểm tra đang ở đúng thư mục:
 
 ```bash
@@ -79,7 +79,7 @@ npm run setup
 npm start
 ```
 
-7. Mở trình duyệt vào `http://localhost:3000` (xem mục "Kiểm tra hệ thống đã chạy đúng" bên dưới).
+7. Mở trình duyệt vào `http://localhost:3000` và đăng nhập (xem mục "Kiểm tra hệ thống đã chạy đúng" bên dưới).
 
 ### Chạy trong GitHub Codespaces
 
@@ -116,8 +116,8 @@ sudo -u postgres psql -c "CREATE DATABASE smart_crm OWNER crm;"
 ### Kiểm tra hệ thống đã chạy đúng
 
 - Mở `http://localhost:3000/health`, kết quả phải là `{"status":"ok"}`.
-- Giao diện web nằm tại `http://localhost:3000`, mở lên là dùng được, không cần đăng nhập. Dữ liệu mẫu có hai khách (số điện thoại `0937482915` và `0865139704`): ở màn hình "Tạo phiếu" nhập một trong hai số rồi bấm Tìm khách; nhập số khác để thử trường hợp khách mới.
-- Có thể thử thêm các yêu cầu mẫu trong file `requests.http` (dùng extension REST Client của VS Code).
+- Giao diện web nằm tại `http://localhost:3000`. Đăng nhập bằng `AUTH_USERNAME` và `AUTH_PASSWORD` trong `.env` (giá trị mẫu trong `.env.example` là `nhanvien` / `doi-mat-khau-nay`). Dữ liệu mẫu có hai khách (số điện thoại `0937482915` và `0865139704`): ở màn hình "Tạo phiếu" nhập một trong hai số rồi bấm Tìm khách; nhập số khác để thử trường hợp khách mới.
+- Có thể thử thêm các yêu cầu mẫu trong file `requests.http` (dùng extension REST Client của VS Code; yêu cầu số 0 đăng nhập và tự lấy token cho các yêu cầu sau).
 
 ### Chạy lại lần hai (không lỗi, không nhân đôi dữ liệu)
 
@@ -167,7 +167,7 @@ cdtn1-nguyendotuankiet-l2/
 │   ├── rules/                 # Quy tắc thuần: bảo hành, SLA, vòng đời trạng thái, mã phiếu
 │   └── validators/            # Kiểm tra dữ liệu đầu vào
 ├── public/                    # Giao diện web (HTML + JS thuần), do chính server phục vụ
-│   ├── index.html             # Khung trang và ba màn hình: tạo phiếu (kèm tạo khách và thiết bị mới), danh sách phiếu, chi tiết phiếu (lịch sử trạng thái)
+│   ├── index.html             # Khung trang và các màn hình: đăng nhập, tạo phiếu (kèm tạo khách và thiết bị mới), danh sách phiếu
 │   └── js/                    # api-client.js (lớp client API riêng) và app.js (màn hình, ba trạng thái)
 ├── migrations/                # Dựng cơ sở dữ liệu từ trạng thái trống (chạy lại được)
 ├── seeds/                     # Dữ liệu mẫu để hệ thống không lên trống trơn
@@ -222,13 +222,13 @@ Quy tắc nghiệp vụ đã hiện thực (mã BR theo `docs/srs.md`):
 | Phương thức | Đường dẫn | Ý nghĩa |
 |---|---|---|
 | GET | `/health` | Kiểm tra hệ thống đang chạy |
+| POST | `/auth/login` | Đăng nhập, trả token. Mọi API bên dưới cần header `Authorization: Bearer <token>`, thiếu thì trả 401 |
 | GET | `/catalog/categories`, `/catalog/devices?customerId=` | Danh sách nhóm sự cố và thiết bị của khách (dùng cho màn hình tạo phiếu) |
 | POST | `/catalog/devices` | Thêm thiết bị mới cho khách (IMEI/Serial duy nhất; không có ngày mua thì phải ghi chú nguồn gốc) |
 | POST, GET | `/customers`, `/customers?phone=...` | Tạo khách hàng, tra cứu theo số điện thoại |
 | GET, PUT, DELETE | `/customers/:id` | Đọc, sửa, ngừng hoạt động khách hàng |
 | POST, GET | `/tickets`, `/tickets?status=...` | Tạo phiếu, liệt kê phiếu theo trạng thái |
 | GET, PUT | `/tickets/:id` | Đọc phiếu, sửa mô tả lỗi |
-| GET | `/tickets/lookup?code=` và `/tickets/:id/detail` | Chi tiết phiếu: khách, thiết bị, nhóm sự cố và lịch sử trạng thái |
 | PATCH | `/tickets/:id/status` | Chuyển trạng thái phiếu (BR5) |
 | DELETE | `/tickets/:id` | Huỷ phiếu (chuyển sang `DA_HUY`) |
 
@@ -240,7 +240,7 @@ Lỗi trả về luôn có dạng `{"error": {"code": "...", "message": "..."}}`
 - [x] Module cốt lõi phía backend: khách hàng và phiếu bảo hành (đủ CRUD, BR1, BR2, BR4, BR5, BR6, BR7)
 - [x] Migration và dữ liệu mẫu chạy lại được, không nhân đôi dữ liệu
 - [x] Bộ kiểm thử ba loại, chạy bằng `npm test`
-- [x] Giao diện: tạo phiếu (nhập số điện thoại, khách cũ hiện thiết bị, khách mới nhập họ tên và thiết bị), danh sách phiếu, chi tiết phiếu kèm lịch sử trạng thái; có ba trạng thái (đang tải, rỗng, lỗi có nút Thử lại)
+- [x] Giao diện: đăng nhập, tạo phiếu (nhập số điện thoại, khách cũ hiện thiết bị, khách mới nhập họ tên và thiết bị), danh sách phiếu; có ba trạng thái (đang tải, rỗng, lỗi có nút Thử lại)
 - [x] Nạp được bộ dữ liệu mô phỏng đầy đủ (tùy chọn): làm sạch, gộp khách trùng, ghi dòng bị loại kèm lý do
-- [ ] Đăng nhập cơ bản (không hiện thực, xem `docs/thay-doi-thiet-ke.md`)
+- [x] Đăng nhập cơ bản (một tài khoản cấu hình trong `.env`, token có hạn 8 giờ)
 - [ ] Sơ đồ kiến trúc thực tế và tag `v0.2`
