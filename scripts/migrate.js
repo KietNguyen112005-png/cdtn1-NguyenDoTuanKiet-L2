@@ -3,6 +3,16 @@ const fs = require('fs');
 const path = require('path');
 const db = require('../src/db');
 
+// Lỗi kết nối của Node có thể có message rỗng (lỗi gộp), nên lấy lý do từ nhiều chỗ và gợi ý cách sửa.
+function explain(err) {
+  const inner = (err.errors || []).find((e) => e.code) || err;
+  const reason = err.message || inner.message || inner.code || String(err);
+  if ([err.code, inner.code].includes('ECONNREFUSED')) {
+    return `${reason}\nKhông kết nối được PostgreSQL ở DATABASE_URL. Hãy bật PostgreSQL (hoặc chạy "docker compose up -d") rồi thử lại.`;
+  }
+  return reason;
+}
+
 async function main() {
   await db.query(`CREATE TABLE IF NOT EXISTS schema_migrations (
     filename TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT now())`);
@@ -20,5 +30,5 @@ async function main() {
 }
 
 main()
-  .catch((err) => { console.error('Migration thất bại:', err.message); process.exitCode = 1; })
+  .catch((err) => { console.error('Migration thất bại:', explain(err)); process.exitCode = 1; })
   .finally(() => db.pool.end());
