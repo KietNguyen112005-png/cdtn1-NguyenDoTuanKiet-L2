@@ -28,4 +28,8 @@ class BusinessRuleError extends AppError {
   constructor(message) { super('BUSINESS_RULE', message); }
 }
 
-module.exports = { AppError, ValidationError, NotFoundError, ConflictError, BusinessRuleError };
+class UnauthorizedError extends AppError {
+  constructor(message) { super('UNAUTHORIZED', message); }
+}
+
+module.exports = { UnauthorizedError, AppError, ValidationError, NotFoundError, ConflictError, BusinessRuleError };

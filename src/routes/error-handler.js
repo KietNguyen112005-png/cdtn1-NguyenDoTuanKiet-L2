@@ -1,5 +1,5 @@
 // Nơi DUY NHẤT đổi lỗi nghiệp vụ thành mã HTTP. Không bao giờ trả lỗi thô của thư viện.
-const STATUS_BY_CODE = { VALIDATION: 400, NOT_FOUND: 404, CONFLICT: 409, BUSINESS_RULE: 422 };
+const STATUS_BY_CODE = { UNAUTHORIZED: 401, VALIDATION: 400, NOT_FOUND: 404, CONFLICT: 409, BUSINESS_RULE: 422 };
 const DB_DOWN_CODES = ['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', '57P01', '57P03', '08006', '08001'];
 
 function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-vars

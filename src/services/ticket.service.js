@@ -1,5 +1,5 @@
 // Nghiệp vụ phiếu bảo hành (FR3–FR7, FR10; BR1–BR5). Tầng này không biết gì về giao thức web.
-const { NotFoundError, ConflictError, BusinessRuleError, ValidationError } = require('../errors');
+const { NotFoundError, ConflictError, BusinessRuleError } = require('../errors');
 const {
   validateCreateTicket, validateIssueDescOnly, validateStatus, validateListFilter,
 } = require('../validators/ticket.validator');
@@ -17,15 +17,6 @@ function createTicketService({
     const ticket = await ticketRepo.findById(id);
     if (!ticket) throw new NotFoundError('Không tìm thấy phiếu bảo hành');
     return ticket;
-  }
-
-  // Chi tiết phiếu: ghép thông tin khách, thiết bị, nhóm sự cố và lịch sử trạng thái.
-  async function buildDetail(ticket) {
-    const [customer, device, category, history] = await Promise.all([
-      customerRepo.findById(ticket.customerId), deviceRepo.findById(ticket.deviceId),
-      categoryRepo.findById(ticket.categoryId), ticketRepo.listHistory(ticket.id),
-    ]);
-    return { ticket, customer, device, category, history };
   }
 
   async function changeStatus(id, toStatus, actor) {
@@ -86,16 +77,6 @@ function createTicketService({
     },
 
     get: (id) => mustFind(id),
-
-    detail: async (id) => buildDetail(await mustFind(id)),
-
-    async detailByCode(code) {
-      const c = String(code || '').trim();
-      if (!c) throw new ValidationError([{ field: 'code', message: 'Nhập mã phiếu, ví dụ BH-000001/2026' }]);
-      const ticket = await ticketRepo.findByCode(c);
-      if (!ticket) throw new NotFoundError('Không tìm thấy phiếu có mã này');
-      return buildDetail(ticket);
-    },
 
     list: (query) => ticketRepo.list(validateListFilter(query)),
 
