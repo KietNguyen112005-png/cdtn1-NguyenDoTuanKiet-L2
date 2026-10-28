@@ -243,4 +243,4 @@ Lỗi trả về luôn có dạng `{"error": {"code": "...", "message": "..."}}`
 - [x] Giao diện: đăng nhập, tạo phiếu (nhập số điện thoại, khách cũ hiện thiết bị, khách mới nhập họ tên và thiết bị), danh sách phiếu; có ba trạng thái (đang tải, rỗng, lỗi có nút Thử lại)
 - [x] Nạp được bộ dữ liệu mô phỏng đầy đủ (tùy chọn): làm sạch, gộp khách trùng, ghi dòng bị loại kèm lý do
 - [x] Đăng nhập cơ bản (một tài khoản cấu hình trong `.env`, token có hạn 8 giờ)
-- [ ] Sơ đồ kiến trúc thực tế và tag `v0.2`
+- [x] Sơ đồ kiến trúc thực tế và tag `v0.2`
