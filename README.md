@@ -89,6 +89,7 @@ npm start
 
 ```bash
 npm install
+npm audit fix (nếu hiện lỗi: 1 high severity vulnerability)
 cp .env.example .env
 docker compose up -d
 ```
