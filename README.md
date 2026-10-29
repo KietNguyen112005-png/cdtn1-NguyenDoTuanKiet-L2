@@ -160,6 +160,7 @@ cdtn1-nguyendotuankiet-l2/
 │   ├── api-contract.md        # Hợp đồng API
 │   ├── thay-doi-thiet-ke.md   # Các thay đổi so với thiết kế BT1
 │   └── ai-disclosure.md       # Bảng khai báo sử dụng công cụ AI
+│   └── architecture-thuc-te.png # Sơ đồ kiến trúc thực tế
 ├── src/                       # Mã nguồn, tách ba lớp
 │   ├── routes/                # Lớp HTTP: đọc request, gọi service, trả response, đổi lỗi thành mã HTTP
 │   ├── services/              # Lớp nghiệp vụ: tạo phiếu, tính SLA, kiểm tra bảo hành, chuyển trạng thái
