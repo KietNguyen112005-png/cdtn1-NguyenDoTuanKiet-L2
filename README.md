@@ -40,6 +40,7 @@ Trên PowerShell dùng `dir package.json`. Nếu báo không tìm thấy file, b
 
 ```bash
 npm install
+npm audit fix (nếu hiện lỗi: 1 high severity vulnerability)
 cp .env.example .env
 ```
 
