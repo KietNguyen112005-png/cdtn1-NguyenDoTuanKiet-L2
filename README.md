@@ -129,18 +129,14 @@ npm run setup
 
 `migrate` bỏ qua file đã áp dụng (bảng `schema_migrations`), `seed` dùng `ON CONFLICT DO NOTHING`.
 
-### Nạp bộ dữ liệu đầy đủ (tùy chọn)
-
-Bộ dữ liệu mô phỏng của học phần (file `dataset.zip`, khoảng 13 MB) không nằm trong repo vì quá lớn. Hệ thống vẫn chạy đầy đủ với dữ liệu mẫu nhỏ của `npm run setup`; bước này chỉ để có dữ liệu thật hơn (khoảng 51 nghìn khách, 7 nghìn phiếu lịch sử).
-
-1. Giải nén `dataset.zip`, chép các file `customers_raw.csv`, `products.csv`, `issue_categories.csv`, `tickets_history.csv`, `ticket_status_log.csv` vào thư mục `data/raw/` (thư mục này đã nằm trong `.gitignore`).
-2. Chạy thử, chỉ làm sạch và đếm, chưa ghi vào cơ sở dữ liệu:
+### Nạp bộ dữ liệu đầy đủ (tùy chọn):
+1. Chạy thử, chỉ làm sạch và đếm, chưa ghi vào cơ sở dữ liệu:
 
 ```bash
 npm run import:dataset -- data/raw --dry-run
 ```
 
-3. Nạp thật (cần đã chạy `npm run setup`). Chạy lại nhiều lần không nhân đôi dữ liệu:
+2. Nạp thật (cần đã chạy `npm run setup`). Chạy lại nhiều lần không nhân đôi dữ liệu:
 
 ```bash
 npm run import:dataset -- data/raw
