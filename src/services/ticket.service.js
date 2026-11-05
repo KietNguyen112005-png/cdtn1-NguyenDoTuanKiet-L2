@@ -61,7 +61,7 @@ function createTicketService({
       const id = await ticketRepo.reserveId();
       const ticket = await ticketRepo.insertWithLog({
         id,
-        ticketCode: formatTicketCode(id, receivedAt.getUTCFullYear()),
+        ticketCode: formatTicketCode(id, Number(toLocalDate(receivedAt, tzOffsetMinutes).slice(0, 4))), // năm theo giờ địa phương
         customerId: customer.id,
         deviceId: device.id,
         categoryId: category.id,
