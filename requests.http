@@ -49,3 +49,23 @@ Authorization: Bearer {{token}}
 
 ### 8. Không có token thì bị từ chối, phải trả 401
 GET http://localhost:3000/tickets
+
+### TC-11 (Test Report): id không hợp lệ, phải trả 400 nêu tên trường id, không phải 500
+GET http://localhost:3000/tickets/abc
+Authorization: Bearer {{token}}
+
+### TC-11b: cùng kiểm tra với khách hàng, cũng phải trả 400
+GET http://localhost:3000/customers/abc
+Authorization: Bearer {{token}}
+
+### BUG-01 tái lập: ngày mua ở tương lai (bản chưa sửa trả 201, bản đã sửa phải trả 400 kèm purchaseDate)
+POST http://localhost:3000/catalog/devices
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "customerId": 1, "modelName": "May thu BUG-01", "serialNo": "BUG01-0001", "purchaseDate": "2999-01-01" }
+
+### BUG-05 tái lập: token thêm đuôi .x (bản chưa sửa trả 200, bản đã sửa phải trả 401)
+GET http://localhost:3000/tickets
+Authorization: Bearer {{token}}.x
+
