@@ -15,8 +15,9 @@ function createAuthService({ username, password, secret, ttlMs = 8 * 3600 * 1000
       return { token: `${payload}.${sign(payload)}`, username };
     },
     verify(token) {
-      const [payload, sig] = String(token || '').split('.');
-      if (!payload || !sig || !same(sig, sign(payload))) throw new UnauthorizedError('Phiên đăng nhập không hợp lệ');
+      const parts = String(token || '').split('.');
+      const [payload, sig] = parts;
+      if (parts.length !== 2 || !payload || !sig || !same(sig, sign(payload))) throw new UnauthorizedError('Phiên đăng nhập không hợp lệ');
       const data = JSON.parse(Buffer.from(payload, 'base64url').toString());
       if (data.exp < clock.now()) throw new UnauthorizedError('Phiên đăng nhập đã hết hạn, hãy đăng nhập lại');
       return { username: data.u };
