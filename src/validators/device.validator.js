@@ -7,8 +7,11 @@ const isRealDate = (s) => {
   return t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d;
 };
 
+const VN_OFFSET_MIN = 420; // UTC+7
+const todayVN = (now = new Date()) => new Date(now.getTime() + VN_OFFSET_MIN * 60000).toISOString().slice(0, 10);
+
 // US3-AC2: thiết bị ngoài lịch sử, không có ngày mua thì bắt buộc ghi chú nguồn gốc mua hàng.
-function validateDevice(input = {}) {
+function validateDevice(input = {}, { today = new Date() } = {}) {
   const errors = [];
   const str = (v) => (typeof v === 'string' ? v.trim() : '');
   const modelName = str(input.modelName); const serialNo = str(input.serialNo);
@@ -20,6 +23,7 @@ function validateDevice(input = {}) {
   if (!serialNo) errors.push({ field: 'serialNo', message: 'IMEI/Serial là bắt buộc' });
   else if (serialNo.length > 50) errors.push({ field: 'serialNo', message: 'IMEI/Serial tối đa 50 ký tự' });
   if (purchaseDate && !isRealDate(purchaseDate)) errors.push({ field: 'purchaseDate', message: 'Ngày mua phải có dạng YYYY-MM-DD' });
+  else if (purchaseDate && purchaseDate > todayVN(today)) errors.push({ field: 'purchaseDate', message: 'Ngày mua không được ở tương lai' });
   if (!Number.isInteger(warrantyMonths) || warrantyMonths < 1 || warrantyMonths > 120) {
     errors.push({ field: 'warrantyMonths', message: 'Số tháng bảo hành phải từ 1 đến 120' });
   }
