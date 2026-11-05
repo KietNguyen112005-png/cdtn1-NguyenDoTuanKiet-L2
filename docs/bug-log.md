@@ -4,11 +4,11 @@ Mỗi bug có đủ bảy dòng: mã và mức độ · phát hiện bởi · tr
 
 | Mã | Mức độ | Tóm tắt | Trạng thái |
 |---|---|---|---|
-| BUG-01 | MAJOR | Thiết bị có ngày mua ở tương lai vẫn được chấp nhận, phiếu bị xác định "còn bảo hành" sai | (điền: Đã sửa) |
-| BUG-02 | MINOR | Đường dẫn có id không phải số (ví dụ `GET /tickets/abc`) trả 500 thay vì 400 | (điền: Đã sửa) |
-| BUG-03 | MINOR | Mã phiếu mang năm sai trong bảy giờ đầu ngày 01/01 (giờ Việt Nam) | (điền: Đã sửa) |
-| BUG-04 | MINOR | Nội dung gửi lên quá lớn trả 500 thay vì 413 | (điền: Đã sửa) |
-| BUG-05 | MINOR | Token đăng nhập thêm đuôi (ví dụ `<token>.x`) vẫn được chấp nhận | (điền: Đã sửa) |
+| BUG-01 | MAJOR | Thiết bị có ngày mua ở tương lai vẫn được chấp nhận, phiếu bị xác định "còn bảo hành" sai | Đã sửa |
+| BUG-02 | MINOR | Đường dẫn có id không phải số (ví dụ `GET /tickets/abc`) trả 500 thay vì 400 | Đã sửa |
+| BUG-03 | MINOR | Mã phiếu mang năm sai trong bảy giờ đầu ngày 01/01 (giờ Việt Nam) | Đã sửa |
+| BUG-04 | MINOR | Nội dung gửi lên quá lớn trả 500 thay vì 413 | Đã sửa |
+| BUG-05 | MINOR | Token đăng nhập thêm đuôi (ví dụ `<token>.x`) vẫn được chấp nhận | Đã sửa |
 
 ## BUG-01 – Thiết bị có ngày mua ở tương lai vẫn được chấp nhận, phiếu bị xác định "còn bảo hành" sai
 
@@ -18,7 +18,7 @@ Mỗi bug có đủ bảy dòng: mã và mức độ · phát hiện bởi · tr
 4. **Cách tái lập:** 1) Đăng nhập (yêu cầu số 0 trong `requests.http`). 2) Gửi mục "BUG-01 tái lập" (`POST /catalog/devices` với `purchaseDate: "2999-01-01"`): trả 201. 3) Lập phiếu cho thiết bị vừa thêm: `warrantyStatus` là CON_BAO_HANH. Hoặc chạy `npm test` trên bản chưa sửa: TC-09 FAIL.
 5. **Nguyên nhân gốc:** `validateDevice` chỉ kiểm tra ngày mua đúng định dạng, không so với ngày hiện tại; `evaluateWarranty` dùng `receivedDate <= expiresOn` nên ngày mua ở tương lai luôn "còn bảo hành".
 6. **Cách sửa:** Thêm nhánh so sánh ngày mua với ngày hôm nay theo giờ Việt Nam trong `src/validators/device.validator.js` (tham số `today` được truyền vào để test cố định ngày). Ngày mua đúng hôm nay vẫn hợp lệ.
-7. **Commit và xác nhận:** https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/<mã-commit-sửa-BUG-01> · chạy lại TC-09 sau khi sửa: (điền PASS sau khi chạy thật).
+7. **Commit và xác nhận:** [https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/<mã-commit-sửa-BUG-01>](https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/e206ca30b2b1cf38a583dc6e8c83dc0a22f81149) · chạy lại TC-09 sau khi sửa: PASS.
 
 ## BUG-02 – Đường dẫn có id không phải số (ví dụ `GET /tickets/abc`) trả 500 thay vì 400
 
@@ -28,7 +28,7 @@ Mỗi bug có đủ bảy dòng: mã và mức độ · phát hiện bởi · tr
 4. **Cách tái lập:** 1) Đăng nhập. 2) Bấm Send Request ở mục "TC-11" trong `requests.http` (`GET /tickets/abc`). 3) Nhận 500; nhật ký máy chủ (terminal chạy `npm start`) in lỗi cơ sở dữ liệu.
 5. **Nguyên nhân gốc:** Route đổi id bằng `Number(req.params.id)`; `Number("abc")` là `NaN`, giá trị này được gửi xuống PostgreSQL làm tham số kiểu bigint và gây lỗi cú pháp (mã 22P02) mà `error-handler` không nhận ra nên rơi vào nhánh 500. Lỗi của người gọi bị xử lý như lỗi của hệ thống.
 6. **Cách sửa:** Thêm `src/routes/parse-id.js` chỉ nhận số nguyên dương (sai thì ném lỗi nhập liệu, trả 400) và dùng trong `customer.routes.js`, `ticket.routes.js`, `catalog.routes.js`. Test hồi quy: `tests/bug-02-id-khong-hop-le.test.js`.
-7. **Commit và xác nhận:** https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/<mã-commit-sửa-BUG-02> · chạy lại TC-11 và test hồi quy BUG-02 sau khi sửa: (điền PASS sau khi chạy thật).
+7. **Commit và xác nhận:** [https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/<mã-commit-sửa-BUG-02>](https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/8fae729e7864cd03466f7caaf21865a5d75d70b8) · chạy lại TC-11 và test hồi quy BUG-02 sau khi sửa: PASS.
 
 ## BUG-03 – Mã phiếu mang năm sai trong bảy giờ đầu ngày 01/01 (giờ Việt Nam)
 
@@ -38,7 +38,7 @@ Mỗi bug có đủ bảy dòng: mã và mức độ · phát hiện bởi · tr
 4. **Cách tái lập:** Chạy `node --test --test-name-pattern="BUG-03"` trên bản chưa sửa: test dùng đồng hồ cố định `2026-12-31T20:00:00Z` (tức 03:00 01/01/2027 giờ VN) và FAIL vì mã mang năm 2026. Không tái lập bằng tay được trừ khi đổi giờ máy.
 5. **Nguyên nhân gốc:** `ticket.service.js` lấy năm bằng `receivedAt.getUTCFullYear()` (giờ UTC), trong khi mọi quy tắc khác của hệ thống tính theo giờ Việt Nam (UTC+7).
 6. **Cách sửa:** Lấy năm từ ngày địa phương `toLocalDate(receivedAt, tzOffsetMinutes)` trong `src/services/ticket.service.js`. Test hồi quy: `tests/bug-03-nam-ma-phieu.test.js` (kèm ca biên 23:59 ngày 31/12 vẫn là năm cũ).
-7. **Commit và xác nhận:** https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/<mã-commit-sửa-BUG-03> · chạy lại test hồi quy BUG-03 sau khi sửa: (điền PASS sau khi chạy thật).
+7. **Commit và xác nhận:** [https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/<mã-commit-sửa-BUG-03>](https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/5e2cb980e48317a11f80b1e065ca5332f78bd801) · chạy lại test hồi quy BUG-03 sau khi sửa: PASS.
 
 ## BUG-04 – Nội dung gửi lên quá lớn trả 500 thay vì 413
 
@@ -48,7 +48,7 @@ Mỗi bug có đủ bảy dòng: mã và mức độ · phát hiện bởi · tr
 4. **Cách tái lập:** Trong PowerShell: `$t = (Invoke-RestMethod -Method Post -Uri http://localhost:3000/auth/login -ContentType "application/json" -Body '{"username":"nhanvien","password":"1234"}').data.token`; `$body = '{"fullName":"' + ('a' * 200000) + '","phone":"0912345678"}'`; `[IO.File]::WriteAllText("$PWD\big.json", $body)`; `curl.exe -i -X POST http://localhost:3000/customers -H "Authorization: Bearer $t" -H "Content-Type: application/json" --data-binary "@big.json"`. Bản chưa sửa trả 500.
 5. **Nguyên nhân gốc:** `express.json` giới hạn thân yêu cầu 100 KB và ném lỗi loại `entity.too.large` (trạng thái 413), nhưng `error-handler.js` chỉ nhận ra lỗi `entity.parse.failed` nên lỗi này rơi vào nhánh 500.
 6. **Cách sửa:** Thêm nhánh trả 413 với mã `PAYLOAD_TOO_LARGE` trong `src/routes/error-handler.js`. Test hồi quy: `tests/bug-04-noi-dung-qua-lon.test.js` (kèm kiểm tra lỗi lạ vẫn trả 500 chung chung, không lộ chi tiết).
-7. **Commit và xác nhận:** https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/<mã-commit-sửa-BUG-04> · chạy lại test hồi quy BUG-04 sau khi sửa: (điền PASS sau khi chạy thật).
+7. **Commit và xác nhận:** [https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/<mã-commit-sửa-BUG-04>](https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/092eb569309ce4fc9eeee63d37293792f1865990) · chạy lại test hồi quy BUG-04 sau khi sửa: PASS.
 
 ## BUG-05 – Token đăng nhập thêm đuôi (ví dụ `<token>.x`) vẫn được chấp nhận
 
@@ -58,5 +58,5 @@ Mỗi bug có đủ bảy dòng: mã và mức độ · phát hiện bởi · tr
 4. **Cách tái lập:** 1) Đăng nhập. 2) Gửi mục "BUG-05 tái lập" trong `requests.http` (`GET /tickets` với `Bearer {{token}}.x`): bản chưa sửa trả 200. Hoặc chạy `npm test` trên bản chưa sửa: TC-10 FAIL.
 5. **Nguyên nhân gốc:** `verify` tách token bằng `split(".")` rồi chỉ lấy hai phần đầu và bỏ qua phần thừa, nên token có đuôi vẫn khớp chữ ký.
 6. **Cách sửa:** Yêu cầu token có đúng hai phần (`parts.length === 2`) trong `src/services/auth.service.js`. TC-10 kiểm cả bốn biến thể token (không có, sửa một ký tự, thêm đuôi, quá hạn).
-7. **Commit và xác nhận:** https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/<mã-commit-sửa-BUG-05> · chạy lại TC-10 sau khi sửa: (điền PASS sau khi chạy thật).
+7. **Commit và xác nhận:** [https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/<mã-commit-sửa-BUG-05>](https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2/commit/cf359050c3152eb47ec87bf638410f54cd7c475f) · chạy lại TC-10 sau khi sửa: PASS.
 
