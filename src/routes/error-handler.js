@@ -8,6 +8,9 @@ function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-va
       error: { code: err.code, message: err.message, ...(err.fields && { fields: err.fields }) },
     });
   }
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({ error: { code: 'PAYLOAD_TOO_LARGE', message: 'Nội dung gửi lên quá lớn' } });
+  }
   if (err.type === 'entity.parse.failed') {
     return res.status(400).json({ error: { code: 'VALIDATION', message: 'Nội dung JSON gửi lên không hợp lệ' } });
   }
