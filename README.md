@@ -27,7 +27,7 @@ Lưu ý: hệ thống cần một PostgreSQL đang chạy trước khi chạy `n
    - Clone: `git clone https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2.git`
    - Hoặc tải ZIP: trên trang repo bấm **Code → Download ZIP**, rồi giải nén.
 2. Mở VS Code, chọn **File → Open Folder**, chọn thư mục **chứa file `package.json`**.
-   - Lưu ý khi tải ZIP: lúc giải nén, Windows thường tạo thêm một thư mục lồng bên trong cùng tên (ví dụ `cdtn1-NguyenDoTuanKiet-L2-main\cdtn1-NguyenDoTuanKiet-L2-main`). Mã nguồn nằm ở thư mục **bên trong**, hãy mở thư mục đó, không mở thư mục ngoài.
+   - Lưu ý khi tải ZIP: lúc giải nén trong Downloads, Windows thường tạo thêm một thư mục lồng bên trong cùng tên (ví dụ `cdtn1-NguyenDoTuanKiet-L2-main\cdtn1-NguyenDoTuanKiet-L2-main`). Mã nguồn nằm ở thư mục **bên trong**, hãy mở thư mục đó, không mở thư mục ngoài.
 3. Mở terminal: **Terminal → New Terminal**, rồi kiểm tra đang ở đúng thư mục:
 
 ```bash
@@ -40,6 +40,7 @@ Trên PowerShell dùng `dir package.json`. Nếu báo không tìm thấy file, b
 
 ```bash
 npm install
+npm audit fix (nếu hiện lỗi: 1 high severity vulnerability)
 cp .env.example .env
 ```
 
@@ -88,6 +89,7 @@ npm start
 
 ```bash
 npm install
+npm audit fix (nếu hiện lỗi: 1 high severity vulnerability)
 cp .env.example .env
 docker compose up -d
 ```
@@ -172,7 +174,8 @@ cdtn1-nguyendotuankiet-l2/
 │   ├── wireframe.drawio       # Wireframe 3 màn hình chính
 │   ├── api-contract.md        # Hợp đồng API
 │   ├── thay-doi-thiet-ke.md   # Các thay đổi so với thiết kế BT1
-│   └── ai-disclosure.md       # Bảng khai báo sử dụng công cụ AI
+│   ├── ai-disclosure.md       # Bảng khai báo sử dụng công cụ AI
+│   └── architecture-thuc-te.png # Sơ đồ kiến trúc thực tế
 ├── src/                       # Mã nguồn, tách ba lớp
 │   ├── routes/                # Lớp HTTP: đọc request, gọi service, trả response, đổi lỗi thành mã HTTP
 │   ├── services/              # Lớp nghiệp vụ: tạo phiếu, tính SLA, kiểm tra bảo hành, chuyển trạng thái
@@ -256,4 +259,4 @@ Lỗi trả về luôn có dạng `{"error": {"code": "...", "message": "..."}}`
 - [x] Giao diện: đăng nhập, tạo phiếu (nhập số điện thoại, khách cũ hiện thiết bị, khách mới nhập họ tên và thiết bị), danh sách phiếu, khách hàng (tra cứu, sửa, ngừng hoạt động); có ba trạng thái (đang tải, rỗng, lỗi có nút Thử lại)
 - [x] Nạp được bộ dữ liệu mô phỏng đầy đủ (tùy chọn): làm sạch, gộp khách trùng, ghi dòng bị loại kèm lý do
 - [x] Đăng nhập cơ bản (một tài khoản cấu hình trong `.env`, token có hạn 8 giờ)
-- [ ] Sơ đồ kiến trúc thực tế và tag `v0.2`
+- [x] Sơ đồ kiến trúc thực tế và tag `v0.2`
