@@ -27,7 +27,7 @@ Lưu ý: hệ thống cần một PostgreSQL đang chạy trước khi chạy `n
    - Clone: `git clone https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2.git`
    - Hoặc tải ZIP: trên trang repo bấm **Code → Download ZIP**, rồi giải nén.
 2. Mở VS Code, chọn **File → Open Folder**, chọn thư mục **chứa file `package.json`**.
-   - Lưu ý khi tải ZIP: lúc giải nén trong Downloads, Windows thường tạo thêm một thư mục lồng bên trong cùng tên (ví dụ `cdtn1-NguyenDoTuanKiet-L2-main\cdtn1-NguyenDoTuanKiet-L2-main`). Mã nguồn nằm ở thư mục **bên trong**, hãy mở thư mục đó, không mở thư mục ngoài.
+   - Lưu ý khi tải ZIP: lúc giải nén, Windows thường tạo thêm một thư mục lồng bên trong cùng tên (ví dụ `cdtn1-NguyenDoTuanKiet-L2-main\cdtn1-NguyenDoTuanKiet-L2-main`). Mã nguồn nằm ở thư mục **bên trong**, hãy mở thư mục đó, không mở thư mục ngoài.
 3. Mở terminal: **Terminal → New Terminal**, rồi kiểm tra đang ở đúng thư mục:
 
 ```bash
@@ -40,7 +40,6 @@ Trên PowerShell dùng `dir package.json`. Nếu báo không tìm thấy file, b
 
 ```bash
 npm install
-npm audit fix (nếu hiện lỗi: 1 high severity vulnerability)
 cp .env.example .env
 ```
 
@@ -80,7 +79,7 @@ npm run setup
 npm start
 ```
 
-7. Mở trình duyệt vào `http://localhost:3000` và đăng nhập (xem mục "Kiểm tra hệ thống đã chạy đúng" bên dưới).
+7. Mở trình duyệt vào `http://localhost:3000` và đăng nhập bằng tài khoản `nhanvien`, mật khẩu `1234` (xem mục "Đăng nhập" bên dưới).
 
 ### Chạy trong GitHub Codespaces
 
@@ -89,7 +88,6 @@ npm start
 
 ```bash
 npm install
-npm audit fix (nếu hiện lỗi: 1 high severity vulnerability)
 cp .env.example .env
 docker compose up -d
 ```
@@ -118,8 +116,21 @@ sudo -u postgres psql -c "CREATE DATABASE smart_crm OWNER crm;"
 ### Kiểm tra hệ thống đã chạy đúng
 
 - Mở `http://localhost:3000/health`, kết quả phải là `{"status":"ok"}`.
-- Giao diện web nằm tại `http://localhost:3000`. Đăng nhập bằng `AUTH_USERNAME` và `AUTH_PASSWORD` trong `.env` (giá trị mẫu trong `.env.example` là `nhanvien` / `doi-mat-khau-nay`). Dữ liệu mẫu có hai khách (số điện thoại `0937482915` và `0865139704`): ở màn hình "Tạo phiếu" nhập một trong hai số rồi bấm Tìm khách; nhập số khác để thử trường hợp khách mới.
+- Giao diện web nằm tại `http://localhost:3000`. Đăng nhập bằng tài khoản thử nghiệm ghi trong mục "Đăng nhập" bên dưới.
 - Có thể thử thêm các yêu cầu mẫu trong file `requests.http` (dùng extension REST Client của VS Code; yêu cầu số 0 đăng nhập và tự lấy token cho các yêu cầu sau).
+
+### Đăng nhập
+
+Mở `http://localhost:3000`, màn hình đăng nhập hiện ra. Dùng tài khoản thử nghiệm sau (giá trị mẫu trong `.env.example`, sao chép sang `.env` ở bước tạo `.env`):
+
+| Thông tin | Giá trị |
+|---|---|
+| Tài khoản | `nhanvien` |
+| Mật khẩu | `1234` |
+
+Sau khi đăng nhập, hệ thống vào màn hình **Tạo phiếu**; dùng thanh trên cùng để chuyển sang **Danh sách phiếu** hoặc bấm **Đăng xuất**. Dữ liệu mẫu có hai khách (số điện thoại `0937482915` và `0865139704`): ở màn hình Tạo phiếu nhập một trong hai số rồi bấm Tìm khách; nhập số khác để thử trường hợp khách mới.
+
+Đây chỉ là tài khoản thử nghiệm cho môi trường phát triển. Muốn đổi, sửa `AUTH_USERNAME` và `AUTH_PASSWORD` trong `.env` rồi chạy lại `npm start`. Nếu quên đăng nhập hoặc đăng nhập sai, hệ thống báo "Sai tên đăng nhập hoặc mật khẩu".
 
 ### Chạy lại lần hai (không lỗi, không nhân đôi dữ liệu)
 
@@ -129,14 +140,18 @@ npm run setup
 
 `migrate` bỏ qua file đã áp dụng (bảng `schema_migrations`), `seed` dùng `ON CONFLICT DO NOTHING`.
 
-### Nạp bộ dữ liệu đầy đủ (tùy chọn):
-1. Chạy thử, chỉ làm sạch và đếm, chưa ghi vào cơ sở dữ liệu:
+### Nạp bộ dữ liệu đầy đủ (tùy chọn)
+
+Bộ dữ liệu mô phỏng của học phần (file `dataset.zip`, khoảng 13 MB) không nằm trong repo vì quá lớn. Hệ thống vẫn chạy đầy đủ với dữ liệu mẫu nhỏ của `npm run setup`; bước này chỉ để có dữ liệu thật hơn (khoảng 51 nghìn khách, 7 nghìn phiếu lịch sử).
+
+1. Giải nén `dataset.zip`, chép các file `customers_raw.csv`, `products.csv`, `issue_categories.csv`, `tickets_history.csv`, `ticket_status_log.csv` vào thư mục `data/raw/` (thư mục này đã nằm trong `.gitignore`).
+2. Chạy thử, chỉ làm sạch và đếm, chưa ghi vào cơ sở dữ liệu:
 
 ```bash
 npm run import:dataset -- data/raw --dry-run
 ```
 
-2. Nạp thật (cần đã chạy `npm run setup`). Chạy lại nhiều lần không nhân đôi dữ liệu:
+3. Nạp thật (cần đã chạy `npm run setup`). Chạy lại nhiều lần không nhân đôi dữ liệu:
 
 ```bash
 npm run import:dataset -- data/raw
@@ -158,7 +173,6 @@ cdtn1-nguyendotuankiet-l2/
 │   ├── api-contract.md        # Hợp đồng API
 │   ├── thay-doi-thiet-ke.md   # Các thay đổi so với thiết kế BT1
 │   └── ai-disclosure.md       # Bảng khai báo sử dụng công cụ AI
-│   └── architecture-thuc-te.png # Sơ đồ kiến trúc thực tế
 ├── src/                       # Mã nguồn, tách ba lớp
 │   ├── routes/                # Lớp HTTP: đọc request, gọi service, trả response, đổi lỗi thành mã HTTP
 │   ├── services/              # Lớp nghiệp vụ: tạo phiếu, tính SLA, kiểm tra bảo hành, chuyển trạng thái
@@ -166,7 +180,7 @@ cdtn1-nguyendotuankiet-l2/
 │   ├── rules/                 # Quy tắc thuần: bảo hành, SLA, vòng đời trạng thái, mã phiếu
 │   └── validators/            # Kiểm tra dữ liệu đầu vào
 ├── public/                    # Giao diện web (HTML + JS thuần), do chính server phục vụ
-│   ├── index.html             # Khung trang và các màn hình: đăng nhập, tạo phiếu (kèm tạo khách và thiết bị mới), danh sách phiếu
+│   ├── index.html             # Khung trang và các màn hình: đăng nhập, tạo phiếu (kèm tạo khách và thiết bị mới), danh sách phiếu, khách hàng (sửa, ngừng hoạt động)
 │   └── js/                    # api-client.js (lớp client API riêng) và app.js (màn hình, ba trạng thái)
 ├── migrations/                # Dựng cơ sở dữ liệu từ trạng thái trống (chạy lại được)
 ├── seeds/                     # Dữ liệu mẫu để hệ thống không lên trống trơn
@@ -239,7 +253,7 @@ Lỗi trả về luôn có dạng `{"error": {"code": "...", "message": "..."}}`
 - [x] Module cốt lõi phía backend: khách hàng và phiếu bảo hành (đủ CRUD, BR1, BR2, BR4, BR5, BR6, BR7)
 - [x] Migration và dữ liệu mẫu chạy lại được, không nhân đôi dữ liệu
 - [x] Bộ kiểm thử ba loại, chạy bằng `npm test`
-- [x] Giao diện: đăng nhập, tạo phiếu (nhập số điện thoại, khách cũ hiện thiết bị, khách mới nhập họ tên và thiết bị), danh sách phiếu; có ba trạng thái (đang tải, rỗng, lỗi có nút Thử lại)
+- [x] Giao diện: đăng nhập, tạo phiếu (nhập số điện thoại, khách cũ hiện thiết bị, khách mới nhập họ tên và thiết bị), danh sách phiếu, khách hàng (tra cứu, sửa, ngừng hoạt động); có ba trạng thái (đang tải, rỗng, lỗi có nút Thử lại)
 - [x] Nạp được bộ dữ liệu mô phỏng đầy đủ (tùy chọn): làm sạch, gộp khách trùng, ghi dòng bị loại kèm lý do
 - [x] Đăng nhập cơ bản (một tài khoản cấu hình trong `.env`, token có hạn 8 giờ)
-- [x] Sơ đồ kiến trúc thực tế và tag `v0.2`
+- [ ] Sơ đồ kiến trúc thực tế và tag `v0.2`
