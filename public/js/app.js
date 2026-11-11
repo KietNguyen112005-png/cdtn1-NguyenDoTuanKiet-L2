@@ -78,6 +78,7 @@ function ticketView() {
 }
 
 function ticketForm({ c, phone, devices, categories }, out, step) {
+  if (c && !c.isActive) return empty('Khách hàng đã ngừng hoạt động', 'Không thể lập phiếu mới cho khách này.');
   let customer = c; let createdDevice = null; // giữ lại nếu lần gửi trước đã tạo được, để bấm lại không tạo trùng
   const hasDevices = devices.length > 0;
   const sel = h('select', { name: 'deviceId', onchange: () => toggle() }, devices.map((d) => h('option', { value: d.id }, `${d.modelName} (${d.serialNo})`)),
@@ -145,8 +146,68 @@ function listView() {
   return panel(h('h2', {}, 'Danh sách phiếu (sắp theo hạn cam kết)'), h('label', { for: 'status' }, 'Lọc theo trạng thái'), filter, h('div', { style: 'margin-top:16px' }, body));
 }
 
+// ---------- Màn hình 3: khách hàng - tra cứu, sửa, ngừng hoạt động (BR7) ----------
+function customerView() {
+  const result = h('div');
+  const phone = h('input', { id: 'cphone', inputmode: 'numeric', placeholder: 'Nhập số điện thoại 10 chữ số' });
+  const search = () => load(result, () => ApiClient.lookupCustomer(phone.value.trim()).catch((e) => {
+    if (e.status === 404) return { notFound: true }; throw e; }), (c) => (c.notFound
+    ? empty('Không tìm thấy khách hàng', 'Kiểm tra lại số điện thoại. Khách mới được tạo ở màn hình Tạo phiếu.')
+    : customerCard(c, result)));
+  return panel(h('h2', {}, 'Khách hàng'),
+    h('form', { onsubmit: (e) => { e.preventDefault(); search(); } }, h('label', { for: 'cphone' }, 'Số điện thoại'),
+      h('div', { class: 'row' }, phone, h('button', { class: 'btn', style: 'margin:0', type: 'submit' }, 'Tra cứu'))),
+    h('div', { style: 'margin-top:16px' }, result));
+}
+
+function customerCard(c, container, note) {
+  const show = (cust, msg) => container.replaceChildren(customerCard(cust, container, msg));
+  const info = h('dl', { class: 'info' },
+    h('dt', {}, 'Họ tên'), h('dd', {}, c.fullName), h('dt', {}, 'Số điện thoại'), h('dd', {}, c.phone),
+    h('dt', {}, 'Địa chỉ'), h('dd', {}, c.address || 'Chưa có'), h('dt', {}, 'Email'), h('dd', {}, c.email || 'Chưa có'),
+    h('dt', {}, 'Trạng thái'), h('dd', {}, c.isActive ? h('span', { class: 'good' }, 'Đang hoạt động') : h('span', { class: 'late' }, 'Đã ngừng hoạt động')));
+  const done = note && h('div', { class: 'panel success', role: 'status' }, note);
+  if (!c.isActive) {
+    return h('div', {}, done, info, h('p', { class: 'sum' }, 'Khách đã ngừng hoạt động: hồ sơ và các phiếu cũ vẫn được giữ, nhưng không lập được phiếu mới.'));
+  }
+  const edit = () => container.replaceChildren(editForm(c, container, show));
+  const deactivate = async (e) => {
+    if (!window.confirm(`Ngừng hoạt động khách "${c.fullName}"?\nHồ sơ và các phiếu cũ vẫn được giữ, nhưng không lập được phiếu mới cho khách này.`)) return;
+    e.target.disabled = true;
+    try { show(await ApiClient.deactivateCustomer(c.id), 'Đã ngừng hoạt động khách hàng.'); } catch (err) {
+      if (err.status === 401) return showLogin(err.message);
+      e.target.disabled = false; container.replaceChildren(failure(err, () => show(c)));
+    }
+  };
+  return h('div', {}, done, info, h('div', { class: 'actions' },
+    h('button', { class: 'btn', type: 'button', onclick: edit }, 'Sửa thông tin'),
+    h('button', { class: 'btn danger', type: 'button', onclick: deactivate }, 'Ngừng hoạt động')));
+}
+
+function editForm(c, container, show) {
+  const form = h('form', { onsubmit: async (e) => {
+    e.preventDefault();
+    try {
+      const updated = await ApiClient.updateCustomer(c.id, {
+        fullName: form.fullName.value, phone: form.phone.value, address: form.address.value, email: form.email.value });
+      const box = document.getElementById('cphone'); if (box) box.value = updated.phone;
+      show(updated, 'Đã lưu thông tin khách hàng.');
+    } catch (err) {
+      if (err.status === 401) return showLogin(err.message);
+      if (!fieldErrors(err, form)) form.append(failure(err));
+    }
+  } },
+  h('label', {}, 'Họ tên'), h('input', { name: 'fullName', value: c.fullName }),
+  h('label', {}, 'Số điện thoại'), h('input', { name: 'phone', value: c.phone, inputmode: 'numeric' }),
+  h('label', {}, 'Địa chỉ'), h('input', { name: 'address', value: c.address || '' }),
+  h('label', {}, 'Email'), h('input', { name: 'email', value: c.email || '' }),
+  h('div', { class: 'actions' }, h('button', { class: 'btn', type: 'submit' }, 'Lưu'),
+    h('button', { class: 'btn ghost', type: 'button', onclick: () => show(c) }, 'Hủy')));
+  return form;
+}
+
 // ---------- Điều hướng ----------
-const VIEWS = { ticket: ticketView, list: listView };
+const VIEWS = { ticket: ticketView, list: listView, customer: customerView };
 function go(name) {
   $nav.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === name)));
   $main.replaceChildren(VIEWS[name]());

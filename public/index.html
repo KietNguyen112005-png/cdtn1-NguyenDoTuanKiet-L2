@@ -36,6 +36,10 @@ th{color:var(--mute);font-weight:600}
 .sum{margin:0 0 12px;color:var(--mute)}
 .success{border-left:4px solid var(--ok)}
 .hidden{display:none}
+.info{display:grid;grid-template-columns:150px 1fr;gap:6px 16px;margin:0 0 12px}
+.info dt{color:var(--mute);font-weight:600}.info dd{margin:0}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+button.btn.danger{background:var(--danger)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -45,6 +49,7 @@ th{color:var(--mute);font-weight:600}
   <nav id="nav" class="hidden" role="tablist">
     <button data-view="ticket" role="tab">Tạo phiếu</button>
     <button data-view="list" role="tab">Danh sách phiếu</button>
+    <button data-view="customer" role="tab">Khách hàng</button>
   </nav>
   <button id="logout" class="btn ghost hidden" style="margin:0">Đăng xuất</button>
 </header>

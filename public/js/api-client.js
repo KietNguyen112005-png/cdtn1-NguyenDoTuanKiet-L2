@@ -35,6 +35,8 @@ const ApiClient = (() => {
     logout: () => sessionStorage.removeItem(KEY),
     lookupCustomer: (phone) => request('GET', `/customers?phone=${encodeURIComponent(phone)}`),
     createCustomer: (c) => request('POST', '/customers', c),
+    updateCustomer: (id, c) => request('PUT', `/customers/${id}`, c),
+    deactivateCustomer: (id) => request('DELETE', `/customers/${id}`),
     createDevice: (d) => request('POST', '/catalog/devices', d),
     listDevices: (customerId) => request('GET', `/catalog/devices?customerId=${customerId}`),
     listCategories: () => request('GET', '/catalog/categories'),
