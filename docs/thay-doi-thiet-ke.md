@@ -53,6 +53,11 @@ Phần phản hồi của giảng viên về BT1 (mỗi điểm bốn dòng) đ�
 - **Vì sao:** README của dataset hướng dẫn track SE dùng các file này làm dữ liệu thử nghiệm thật; dataset có lỗi cố ý (hồ sơ trùng, số điện thoại nhiều dạng) nên cần bước làm sạch và loại dòng có lý do.
 - **Ảnh hưởng:** `scripts/import-dataset.js`, `scripts/lib/*`, `tests/dataset-prepare.test.js`, `.gitignore` (thêm `data/raw/`, `data/reject/`); schema không đổi, thông tin trung tâm bảo hành và kỹ thuật viên của dataset không nạp vì thuộc luồng khác.
 
+## 11. Thêm màn hình Khách hàng (sửa, ngừng hoạt động)
+- **Thay đổi gì:** thêm màn hình Khách hàng: tra theo số điện thoại, sửa họ tên, số điện thoại, địa chỉ, email (`PUT /customers/:id`) và ngừng hoạt động có hộp xác nhận (`DELETE /customers/:id`); màn hình Tạo phiếu không cho lập phiếu mới cho khách đã ngừng hoạt động.
+- **Vì sao:** API sửa và ngừng hoạt động khách hàng đã có từ BT2 nhưng giao diện chưa dùng (nhận xét của giảng viên); hoàn thiện US2 và BR7 trên giao diện.
+- **Ảnh hưởng:** `public/js/app.js` (`customerView`, `customerCard`, `editForm`), `public/js/api-client.js`, `public/index.html`, `tests/customer-update.test.js`; schema và API không đổi.
+
 ---
 
 # Phụ lục: Phản hồi của giảng viên về Bài tập 1 và cách đã sửa
