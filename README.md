@@ -11,76 +11,43 @@ Hệ thống giải quyết tình trạng ghi nhận thủ công, dữ liệu ph
 Hệ thống gồm backend Node.js (Express) và cơ sở dữ liệu PostgreSQL, tách ba lớp `routes → services → repositories`.
 
 ## 2. Yêu cầu môi trường
+**Cách 1, chạy bằng Docker (khuyến nghị, dành cho người chấm):**
+- Docker Engine 24 trở lên và Docker Compose v2 (kiểm tra bằng `docker compose version`), Git, khoảng 2 GB đĩa trống, cổng 3000 trống.
+- Không cần cài Node.js hay PostgreSQL.
 
-- Node.js: v20 LTS trở lên (kiểm tra bằng `node -v`)
-- Trình quản lý gói: npm v10.x
-- Cơ sở dữ liệu: PostgreSQL 16 trở lên (đã chạy thử trên bản 18). Có hai cách: dùng Docker (đã có sẵn `docker-compose.yml`) hoặc dùng PostgreSQL cài sẵn trên máy.
-- Biến môi trường: tạo file `.env` từ `.env.example`, gồm `DATABASE_URL` (chuỗi kết nối PostgreSQL), `PORT` (cổng ứng dụng, mặc định 3000) và `SLA_TZ_OFFSET_MINUTES` (lệch múi giờ khi tính SLA, Việt Nam là 420) và `AUTH_USERNAME`, `AUTH_PASSWORD`, `AUTH_SECRET` (tài khoản đăng nhập và khóa ký phiên, bắt buộc phải có). File `.env` thật nằm trong `.gitignore`, không được commit.
+**Cách 2, chạy Node trực tiếp (để phát triển):** Node.js 20 trở lên, npm 10, PostgreSQL 16 trở lên (cài sẵn hoặc chạy bằng Docker).
+
+**Biến môi trường:** tạo `.env` từ `.env.example` (file mẫu đã có giá trị chạy được). Các biến: `APP_PORT` (cổng mở ra máy chủ khi dùng Docker), `DB_NAME`, `DB_USER`, `DB_PASSWORD` (cơ sở dữ liệu), `DB_HOST`, `DB_PORT` (chỉ khi chạy Node trực tiếp, mặc định `localhost` và `5432`), `AUTH_USERNAME`, `AUTH_PASSWORD`, `AUTH_SECRET` (đăng nhập và khóa ký phiên, bắt buộc), `SLA_TZ_OFFSET_MINUTES` (lệch múi giờ khi tính SLA, Việt Nam là 420). Cách cũ `DATABASE_URL` vẫn dùng được và được ưu tiên nếu có. File `.env` thật nằm trong `.gitignore`, không được commit. Thiếu biến bắt buộc thì hệ thống dừng ngay và báo tên biến còn thiếu.
 
 ## 3. Hướng dẫn chạy
 
-Lưu ý: hệ thống cần một PostgreSQL đang chạy trước khi chạy `npm run setup`. Nếu thấy lỗi "Không kết nối được PostgreSQL", hãy làm bước chuẩn bị cơ sở dữ liệu (Cách A hoặc Cách B bên dưới). Có hai nơi để chạy: VS Code trên máy cá nhân, hoặc GitHub Codespaces (chạy ngay trên trình duyệt, không cần cài gì lên máy).
-
-### Chạy trong VS Code trên máy cá nhân
-
-1. Lấy mã nguồn, một trong hai cách:
-   - Clone: `git clone https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2.git`
-   - Hoặc tải ZIP: trên trang repo bấm **Code → Download ZIP**, rồi giải nén.
-2. Mở VS Code, chọn **File → Open Folder**, chọn thư mục **chứa file `package.json`**.
-   - Lưu ý khi tải ZIP: lúc giải nén trong Downloads, Windows thường tạo thêm một thư mục lồng bên trong cùng tên (ví dụ `cdtn1-NguyenDoTuanKiet-L2-main\cdtn1-NguyenDoTuanKiet-L2-main`). Mã nguồn nằm ở thư mục **bên trong**, hãy mở thư mục đó, không mở thư mục ngoài.
-3. Mở terminal: **Terminal → New Terminal**, rồi kiểm tra đang ở đúng thư mục:
-
-```bash
-ls package.json
-```
-
-Trên PowerShell dùng `dir package.json`. Nếu báo không tìm thấy file, bạn đang ở thư mục ngoài: chạy `cd` vào thư mục bên trong (ví dụ `cd cdtn1-NguyenDoTuanKiet-L2-main`) rồi kiểm tra lại cho đến khi thấy `package.json`.
-
-4. Cài thư viện và tạo `.env` (chạy trong thư mục có `package.json`):
+### Cách 1 (khuyến nghị): chạy bằng Docker, hai lệnh
 
 ```bash
 npm install
 npm audit fix (nếu hiện lỗi: 1 high severity vulnerability)
 cp .env.example .env
+docker compose up -d --build
 ```
 
-Trên Windows PowerShell, lệnh tạo `.env` là `Copy-Item .env.example .env`.
+Trên Windows PowerShell, lệnh đầu là `Copy-Item .env.example .env`. Lần build đầu mất khoảng 2 phút. Khi khởi động, ứng dụng tự dựng bảng và nạp dữ liệu mẫu (`npm run setup`), không cần gõ thêm lệnh nào.
 
-5. Chuẩn bị cơ sở dữ liệu (chọn một trong hai cách):
+- Kiểm tra: `docker compose ps` phải hiện hai dịch vụ `db` và `app` ở trạng thái `healthy`, rồi mở `http://localhost:3000`.
+- Xem nhật ký: `docker compose logs app --tail 50`. Dừng: `docker compose down`. Xóa cả dữ liệu để dựng lại từ đầu: `docker compose down -v`.
+- Cổng 3000 đang bị chiếm thì đổi `APP_PORT` trong `.env` (ví dụ 3001) rồi chạy lại lệnh thứ hai.
+- Chạy bộ kiểm thử trong container: `docker compose exec app npm test`.
 
-Cách A và Cách B chỉ cần khi máy chưa có cơ sở dữ liệu cho dự án. Nếu máy đã có PostgreSQL với người dùng, mật khẩu và database khớp `DATABASE_URL` trong `.env`, bạn có thể bỏ qua bước này và chạy thẳng `npm run setup`.
+### Cách 2: chạy Node trực tiếp trong VS Code (phát triển)
 
-**Cách A: dùng Docker (chỉ khi máy đã cài Docker Desktop và đang chạy)**
-
-Kiểm tra trước bằng `docker --version`. Nếu hiện số phiên bản thì chạy:
-
-```bash
-docker compose up -d
-```
-
-Nếu báo `docker is not recognized` (hoặc `command not found`) nghĩa là máy chưa cài Docker, hãy dùng Cách B bên dưới. Nếu đã cài nhưng lệnh lỗi, mở ứng dụng Docker Desktop, chờ nó báo đang chạy, đóng và mở lại VS Code rồi thử lại.
-
-**Cách B: dùng PostgreSQL cài sẵn (không cần Docker, phù hợp nhất với Windows)**
-
-Cài PostgreSQL 16 trở lên từ postgresql.org nếu chưa có (đặt mật khẩu cho tài khoản `postgres` và ghi nhớ), sau đó:
-
-Tạo người dùng và cơ sở dữ liệu rỗng đúng với `.env.example` (người dùng `crm`, mật khẩu `crm_dev_password`, cơ sở dữ liệu `smart_crm`). Chạy bằng tài khoản quản trị `postgres`, nhập mật khẩu khi được hỏi:
-
-```bash
-psql -U postgres -h localhost -c "CREATE USER crm WITH PASSWORD 'crm_dev_password';"
-psql -U postgres -h localhost -c "CREATE DATABASE smart_crm OWNER crm;"
-```
-
-Trên Windows, nếu `psql` chưa có trong PATH, dùng đường dẫn đầy đủ, ví dụ `& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -h localhost -c "..."` (thay `18` bằng phiên bản đã cài). Nếu dùng tên người dùng, mật khẩu hoặc tên cơ sở dữ liệu khác, sửa `DATABASE_URL` trong `.env` cho khớp.
-
-6. Dựng bảng, nạp dữ liệu mẫu và chạy:
-
-```bash
-npm run setup
-npm start
-```
-
-7. Mở trình duyệt vào `http://localhost:3000` và đăng nhập bằng tài khoản `nhanvien`, mật khẩu `1234` (xem mục "Đăng nhập" bên dưới).
+1. Lấy mã nguồn: `git clone https://github.com/KietNguyen112005-png/cdtn1-NguyenDoTuanKiet-L2.git`, hoặc trên trang repo bấm **Code → Download ZIP** rồi giải nén.
+2. Mở VS Code, chọn **File → Open Folder**, chọn thư mục **chứa file `package.json`**. Khi giải nén ZIP, Windows thường tạo thêm một thư mục lồng cùng tên, hãy mở thư mục bên trong.
+3. Mở terminal (**Terminal → New Terminal**) rồi kiểm tra đúng thư mục bằng `dir package.json`. Báo không thấy file thì `cd` vào thư mục bên trong.
+4. Cài thư viện và tạo `.env`: `npm install` rồi `Copy-Item .env.example .env`.
+5. Chuẩn bị PostgreSQL (bỏ qua nếu máy đã có PostgreSQL với người dùng, mật khẩu, cơ sở dữ liệu khớp `DB_*` trong `.env`). Chọn một cách:
+   - **Cách A, chỉ chạy cơ sở dữ liệu bằng Docker:** `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db`. Cần Docker Desktop đang chạy; báo `docker is not recognized` nghĩa là máy chưa cài Docker, dùng Cách B.
+   - **Cách B, PostgreSQL cài sẵn:** tạo người dùng và cơ sở dữ liệu rỗng đúng với `.env.example`: `psql -U postgres -h localhost -c "CREATE USER crm WITH PASSWORD 'crm_dev_password';"` rồi `psql -U postgres -h localhost -c "CREATE DATABASE smart_crm OWNER crm;"`. Trên Windows nếu `psql` chưa có trong PATH, dùng đường dẫn đầy đủ, ví dụ `& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -h localhost -c "..."`.
+6. Dựng bảng, nạp dữ liệu mẫu và chạy: `npm run setup` rồi `npm start`.
+7. Mở `http://localhost:3000` và đăng nhập (xem mục "Đăng nhập" bên dưới). Nếu đang chạy Docker ở Cách 1, hãy `docker compose down` trước vì cùng dùng cổng 3000.
 
 ### Chạy trong GitHub Codespaces
 
@@ -115,8 +82,19 @@ sudo -u postgres psql -c "CREATE USER crm WITH PASSWORD 'crm_dev_password';"
 sudo -u postgres psql -c "CREATE DATABASE smart_crm OWNER crm;"
 ```
 
+### Xử lý sự cố thường gặp
+
+| Triệu chứng | Cách xử lý |
+|---|---|
+| `Bind for 0.0.0.0:3000 failed: port is already allocated` | Cổng bị chiếm (có thể do `npm start` đang chạy). Dừng chương trình đó hoặc đổi `APP_PORT` trong `.env` |
+| Ứng dụng thoát với "Thiếu biến môi trường: ..." | `.env` thiếu dòng có trong `.env.example`. Bổ sung các biến được nêu tên |
+| `password authentication failed` sau khi đổi `DB_PASSWORD` | Dữ liệu cũ vẫn giữ mật khẩu cũ. Chạy `docker compose down -v` rồi dựng lại |
+| `docker: command not found` | Máy chưa cài Docker. Dùng Cách 2 hoặc Codespaces |
+| Danh sách phiếu trống sau khi dựng | Chạy `docker compose logs app --tail 50` xem bước nạp dữ liệu mẫu có lỗi không |
+
 ### Kiểm tra hệ thống đã chạy đúng
 
+- Với Docker: `docker compose ps` hiện `db` và `app` đều `healthy`.
 - Mở `http://localhost:3000/health`, kết quả phải là `{"status":"ok"}`.
 - Giao diện web nằm tại `http://localhost:3000`. Đăng nhập bằng tài khoản thử nghiệm ghi trong mục "Đăng nhập" bên dưới.
 - Có thể thử thêm các yêu cầu mẫu trong file `requests.http` (dùng extension REST Client của VS Code; yêu cầu số 0 đăng nhập và tự lấy token cho các yêu cầu sau).
@@ -136,11 +114,9 @@ Sau khi đăng nhập, hệ thống vào màn hình **Tạo phiếu**; dùng tha
 
 ### Chạy lại lần hai (không lỗi, không nhân đôi dữ liệu)
 
-```bash
-npm run setup
-```
+Với Docker: `docker compose restart app` (hoặc `docker compose up -d` lần nữa); bước dựng bảng và nạp dữ liệu mẫu chạy lại khi ứng dụng khởi động. Với Node trực tiếp: `npm run setup`.
 
-`migrate` bỏ qua file đã áp dụng (bảng `schema_migrations`), `seed` dùng `ON CONFLICT DO NOTHING`.
+`migrate` bỏ qua file đã áp dụng (bảng `schema_migrations`), `seed` dùng `ON CONFLICT DO NOTHING` nên không nhân đôi dữ liệu.
 
 ### Nạp bộ dữ liệu đầy đủ (tùy chọn)
 
@@ -191,7 +167,10 @@ cdtn1-nguyendotuankiet-l2/
 ├── tests/                     # Bộ kiểm thử
 ├── data/                      # Dữ liệu mẫu nhỏ của case study (không commit dữ liệu lớn)
 ├── requests.http              # Yêu cầu mẫu để thử API trong VS Code
-├── docker-compose.yml         # Dựng PostgreSQL 16 cho môi trường phát triển (tùy chọn)
+├── Dockerfile                 # Đóng gói ứng dụng (Node.js 20 alpine, chạy bằng người dùng không phải root)
+├── docker-compose.yml         # Ứng dụng + PostgreSQL 16, có healthcheck; chạy bằng `docker compose up -d --build`
+├── docker-compose.dev.yml     # Chỉ mở cổng CSDL ra máy khi chạy Node trực tiếp
+├── .dockerignore              # Không đưa node_modules, .env, .git vào image
 ├── .env.example               # Danh sách biến môi trường với giá trị mẫu
 ├── .gitignore                 # Loại trừ node_modules/, .env, *.log, ...
 ├── package.json               # Khai báo thư viện và các lệnh npm
