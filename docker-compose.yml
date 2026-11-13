@@ -1,20 +1,41 @@
-# Chỉ dựng PostgreSQL 16 cho môi trường phát triển. Thông tin khớp .env.example.
+# Gói đóng gói hoàn chỉnh: ứng dụng + PostgreSQL. Người chấm chỉ cần hai lệnh:
+#   cp .env.example .env
+#   docker compose up -d --build
 services:
   db:
-    image: postgres:16
+    image: postgres:16-alpine
     environment:
-      POSTGRES_USER: crm
-      POSTGRES_PASSWORD: crm_dev_password
-      POSTGRES_DB: smart_crm
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - crm_data:/var/lib/postgresql/data
+      - dbdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U crm -d smart_crm"]
-      interval: 3s
-      timeout: 3s
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
       retries: 10
+    # Không có "ports": CSDL chỉ mở trong mạng nội bộ của compose (xem docker-compose.dev.yml nếu cần mở).
+
+  app:
+    build: .
+    env_file: .env
+    environment:
+      DB_HOST: db            # TÊN DỊCH VỤ, không phải localhost
+      DB_PORT: "5432"
+      DATABASE_URL: ""       # bỏ qua DATABASE_URL (nếu .env cũ còn), dùng bộ DB_* ở trên
+      PORT: "3000"
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy   # chờ CSDL SẴN SÀNG, không chỉ chờ container khởi động
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
 
 volumes:
-  crm_data:
+  dbdata: {}

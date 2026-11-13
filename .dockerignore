@@ -1,0 +1,9 @@
+# Không đưa vào image: thư viện của máy sinh viên, bí mật, lịch sử Git, dữ liệu lớn
+node_modules
+.env
+.git
+.github
+data
+docs
+*.log
+*.zip

@@ -1,0 +1,6 @@
+# Chỉ dùng khi chạy Node trực tiếp trên máy (npm start) nhưng muốn CSDL chạy bằng Docker:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db
+services:
+  db:
+    ports:
+      - "5432:5432"
