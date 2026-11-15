@@ -37,6 +37,8 @@ Công cụ AI đã sử dụng: **Claude (Anthropic)**, giao diện claude.ai.
 Họ tên: Nguyễn Đỗ Tuấn Kiệt  ·  MSSV: 2374802010260  ·  Ngày: 11/11/2026
 
 # PHỤ LỤC – BẢNG KHAI BÁO SỬ DỤNG CÔNG CỤ AI (BÀI TẬP 3)
+| Công cụ | Dùng vào việc gì | Áp dụng ở tệp / hàm nào | Em đã kiểm chứng thế nào |
+| --- | --- | --- | --- |
 | Claude | Soạn gói đóng gói Docker (Dockerfile, Compose, .dockerignore) và cấu hình biến môi trường | `Dockerfile`, `docker-compose.yml`, `docker-compose.dev.yml`, `.dockerignore`, `.env.example`, `src/config.js`, `tests/config.test.js` | (điền: em đã chạy phép thử máy trắng trong Codespaces: `docker compose ps` healthy, `/health` trả ok, `docker compose exec app npm test` PASS) |
 | Claude | Soạn dữ liệu mẫu sáu phiếu và Deployment Guide tiếng Anh | `seeds/002_sample_tickets.sql`, `docs/deployment-guide.md` | (điền: em đã đối chiếu số bản ghi `3 \| 6 \| 2 \| 3 \| 6 \| 19` ở mục 4 của Guide bằng lệnh đếm trên máy sạch, và làm theo từng bước Guide) |
-| Claude | Soạn checklist bảo mật và chạy thử ba lệnh grep | `docs/checklist-bao-mat.md` | (điền: em đã tự chạy lại từng lệnh trong checklist và chụp ảnh vào `docs/screenshots/`) |
+| Claude | Soạn checklist bảo mật và chạy thử ba lệnh grep | `docs/checklist-bao-mat.md` |
