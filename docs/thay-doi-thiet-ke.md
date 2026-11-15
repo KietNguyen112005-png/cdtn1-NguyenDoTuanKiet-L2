@@ -58,6 +58,20 @@ Phần phản hồi của giảng viên về BT1 (mỗi điểm bốn dòng) đ�
 - **Vì sao:** API sửa và ngừng hoạt động khách hàng đã có từ BT2 nhưng giao diện chưa dùng (nhận xét của giảng viên); hoàn thiện US2 và BR7 trên giao diện.
 - **Ảnh hưởng:** `public/js/app.js` (`customerView`, `customerCard`, `editForm`), `public/js/api-client.js`, `public/index.html`, `tests/customer-update.test.js`; schema và API không đổi.
 
+## 12. Đóng gói bằng Docker Compose
+- **Thay đổi gì:** thêm `Dockerfile`, `.dockerignore` và viết lại `docker-compose.yml` thành ứng dụng cộng PostgreSQL 16 có healthcheck; ứng dụng tự chạy `npm run setup` (dựng bảng, nạp dữ liệu mẫu) khi khởi động; thêm `docker-compose.dev.yml` để mở cổng CSDL khi chạy Node trực tiếp.
+- **Vì sao:** Bài tập 3 yêu cầu dựng lại hệ thống từ thư mục trống bằng không quá hai lệnh (`cp .env.example .env` và `docker compose up -d --build`); BT2 chỉ dựng được CSDL.
+- **Ảnh hưởng:** `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `docker-compose.dev.yml`, `README.md`, `docs/deployment-guide.md`.
+
+## 13. Cấu hình bằng bộ biến DB_* và dừng sớm khi thiếu biến
+- **Thay đổi gì:** `src/config.js` đọc `DB_NAME`, `DB_USER`, `DB_PASSWORD` (`DB_HOST`, `DB_PORT` có mặc định) và vẫn ưu tiên `DATABASE_URL` nếu có; thiếu biến bắt buộc thì dừng và chỉ in tên biến; `.env.example` chuyển sang bộ `DB_*`.
+- **Vì sao:** Docker Compose dựng CSDL và truyền thông tin kết nối bằng các biến riêng; chỉ in tên biến để không lộ giá trị bí mật (checklist bảo mật mục 1 và 5).
+- **Ảnh hưởng:** `src/config.js`, `.env.example`, `tests/config.test.js`, `docker-compose.yml`.
+
+## 14. Thêm sáu phiếu mẫu
+- **Thay đổi gì:** thêm `seeds/002_sample_tickets.sql` nạp sáu phiếu mẫu (mỗi trạng thái một phiếu, trừ Đã hủy) kèm 19 dòng lịch sử trạng thái.
+- **Vì sao:** người chấm dựng từ thư mục trống cần thấy danh sách phiếu có dữ liệu để thử chuyển trạng thái, thay vì màn hình trống.
+- **Ảnh hưởng:** `seeds/002_sample_tickets.sql`, `docs/deployment-guide.md` (mục 4 nêu số bản ghi để đối chiếu); cấu trúc bảng không đổi.
 ---
 
 # Phụ lục: Phản hồi của giảng viên về Bài tập 1 và cách đã sửa
